@@ -32,7 +32,7 @@ public final class IngredientFilter {
             BigDecimal value, BigDecimal secondValue, NumberOperator operator) {
         
         return FilterBuilder.comparableFilter(
-                root -> root.get("nutritionDetails").get("phenylalanine"),
+                root -> root.get("nutritionDetails").get("phenylalanineContent"),
                 value,
                 secondValue,
                 operator);

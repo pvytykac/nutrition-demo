@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 @Builder
 public class NutritionDetailsResponseDTO {
 
-    private BigDecimal fat;
-    private BigDecimal carbs;
-    private BigDecimal protein;
-    private BigDecimal phenylalanine;
-    private String unit;
+    private BigDecimal fatContent;
+    private BigDecimal carbsContent;
+    private BigDecimal proteinContent;
+    private BigDecimal phenylalanineContent;
+    private BigDecimal kilocalories;
 }

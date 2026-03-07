@@ -24,15 +24,17 @@ class IngredientRepositoryTest extends RepositoryTestBase {
     void shouldSaveAndRetrieveIngredient() {
         // given
         NutritionDetails nutritionDetails = NutritionDetails.builder()
-                .fat(new BigDecimal("10.5"))
-                .carbs(new BigDecimal("20.0"))
-                .protein(new BigDecimal("15.0"))
-                .phenylalanine(new BigDecimal("5.0"))
-                .unit("100g")
+                .fatContent(new BigDecimal("10.5"))
+                .carbsContent(new BigDecimal("20.0"))
+                .proteinContent(new BigDecimal("15.0"))
+                .phenylalanineContent(new BigDecimal("5.0"))
+                .kilocalories(new BigDecimal("150.0"))
                 .build();
 
         Ingredient ingredient = Ingredient.builder()
                 .name("Chicken Breast")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(nutritionDetails)
                 .build();
 
@@ -42,12 +44,14 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         // then
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getName()).isEqualTo("Chicken Breast");
+        assertThat(saved.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
+        assertThat(saved.getUnit()).isEqualTo(Unit.GRAM);
         assertThat(saved.getNutritionDetails()).isNotNull();
-        assertThat(saved.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("10.5"));
-        assertThat(saved.getNutritionDetails().getCarbs()).isEqualByComparingTo(new BigDecimal("20.0"));
-        assertThat(saved.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("15.0"));
-        assertThat(saved.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("5.0"));
-        assertThat(saved.getNutritionDetails().getUnit()).isEqualTo("100g");
+        assertThat(saved.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("10.5"));
+        assertThat(saved.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("20.0"));
+        assertThat(saved.getNutritionDetails().getProteinContent()).isEqualByComparingTo(new BigDecimal("15.0"));
+        assertThat(saved.getNutritionDetails().getPhenylalanineContent()).isEqualByComparingTo(new BigDecimal("5.0"));
+        assertThat(saved.getNutritionDetails().getKilocalories()).isEqualByComparingTo(new BigDecimal("150.0"));
     }
 
     @Test
@@ -55,23 +59,33 @@ class IngredientRepositoryTest extends RepositoryTestBase {
     void shouldRetrieveAllIngredients() {
         // given
         NutritionDetails nutrition1 = NutritionDetails.builder()
-                .fat(new BigDecimal("1.0"))
-                .carbs(new BigDecimal("2.0"))
-                .protein(new BigDecimal("3.0"))
-                .phenylalanine(new BigDecimal("0.5"))
-                .unit("100g")
+                .fatContent(new BigDecimal("1.0"))
+                .carbsContent(new BigDecimal("2.0"))
+                .proteinContent(new BigDecimal("3.0"))
+                .phenylalanineContent(new BigDecimal("0.5"))
+                .kilocalories(new BigDecimal("50.0"))
                 .build();
 
         NutritionDetails nutrition2 = NutritionDetails.builder()
-                .fat(new BigDecimal("5.0"))
-                .carbs(new BigDecimal("10.0"))
-                .protein(new BigDecimal("8.0"))
-                .phenylalanine(new BigDecimal("2.0"))
-                .unit("100g")
+                .fatContent(new BigDecimal("5.0"))
+                .carbsContent(new BigDecimal("10.0"))
+                .proteinContent(new BigDecimal("8.0"))
+                .phenylalanineContent(new BigDecimal("2.0"))
+                .kilocalories(new BigDecimal("100.0"))
                 .build();
 
-        testEntityManager.persistFlushFind(Ingredient.builder().name("Ingredient1").nutritionDetails(nutrition1).build());
-        testEntityManager.persistFlushFind(Ingredient.builder().name("Ingredient2").nutritionDetails(nutrition2).build());
+        testEntityManager.persistFlushFind(Ingredient.builder()
+                .name("Ingredient1")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
+                .nutritionDetails(nutrition1)
+                .build());
+        testEntityManager.persistFlushFind(Ingredient.builder()
+                .name("Ingredient2")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
+                .nutritionDetails(nutrition2)
+                .build());
 
         // when
         var result = ingredientRepository.findAll();
@@ -85,15 +99,17 @@ class IngredientRepositoryTest extends RepositoryTestBase {
     void shouldDeleteIngredientById() {
         // given
         NutritionDetails nutritionDetails = NutritionDetails.builder()
-                .fat(new BigDecimal("1.0"))
-                .carbs(new BigDecimal("2.0"))
-                .protein(new BigDecimal("3.0"))
-                .phenylalanine(new BigDecimal("0.5"))
-                .unit("1g")
+                .fatContent(new BigDecimal("1.0"))
+                .carbsContent(new BigDecimal("2.0"))
+                .proteinContent(new BigDecimal("3.0"))
+                .phenylalanineContent(new BigDecimal("0.5"))
+                .kilocalories(new BigDecimal("50.0"))
                 .build();
 
         Ingredient ingredient = Ingredient.builder()
                 .name("ToDelete")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(nutritionDetails)
                 .build();
 
@@ -245,24 +261,28 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         // Apple - low phenylalanine
         testEntityManager.persistFlushFind(Ingredient.builder()
                 .name("Apple")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(NutritionDetails.builder()
-                        .fat(new BigDecimal("0.3"))
-                        .carbs(new BigDecimal("25.0"))
-                        .protein(new BigDecimal("0.5"))
-                        .phenylalanine(new BigDecimal("0.1"))
-                        .unit("100g")
+                        .fatContent(new BigDecimal("0.3"))
+                        .carbsContent(new BigDecimal("25.0"))
+                        .proteinContent(new BigDecimal("0.5"))
+                        .phenylalanineContent(new BigDecimal("0.1"))
+                        .kilocalories(new BigDecimal("50.0"))
                         .build())
                 .build());
         
         // Banana - higher phenylalanine
         testEntityManager.persistFlushFind(Ingredient.builder()
                 .name("Banana")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(NutritionDetails.builder()
-                        .fat(new BigDecimal("0.2"))
-                        .carbs(new BigDecimal("27.0"))
-                        .protein(new BigDecimal("1.0"))
-                        .phenylalanine(new BigDecimal("2.0"))
-                        .unit("100g")
+                        .fatContent(new BigDecimal("0.2"))
+                        .carbsContent(new BigDecimal("27.0"))
+                        .proteinContent(new BigDecimal("1.0"))
+                        .phenylalanineContent(new BigDecimal("2.0"))
+                        .kilocalories(new BigDecimal("90.0"))
                         .build())
                 .build());
     }

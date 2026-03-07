@@ -23,35 +23,41 @@ class IngredientJsonTest {
         void shouldSerializeRequestDTO() throws JSONException {
             // given
             NutritionDetailsRequestDTO nutritionDetails = NutritionDetailsRequestDTO.builder()
-                    .fat(new BigDecimal("10.5"))
-                    .carbs(new BigDecimal("20.0"))
-                    .protein(new BigDecimal("15.0"))
-                    .phenylalanine(new BigDecimal("5.0"))
-                    .unit("100g")
+                    .fatContent(new BigDecimal("10.5"))
+                    .carbsContent(new BigDecimal("20.0"))
+                    .proteinContent(new BigDecimal("15.0"))
+                    .phenylalanineContent(new BigDecimal("5.0"))
+                    .kilocalories(new BigDecimal("150.0"))
                     .build();
 
             IngredientRequestDTO request = IngredientRequestDTO.builder()
                     .name("Chicken Breast")
+                    .quantity(new BigDecimal("100.0"))
+                    .unit(Unit.GRAM)
                     .nutritionDetails(nutritionDetails)
                     .build();
 
             // when
             JSONObject json = new JSONObject()
                 .put("name", request.getName())
+                .put("quantity", request.getQuantity().doubleValue())
+                .put("unit", request.getUnit().name())
                 .put("nutritionDetails", new JSONObject()
-                    .put("fat", request.getNutritionDetails().getFat().doubleValue())
-                    .put("carbs", request.getNutritionDetails().getCarbs().doubleValue())
-                    .put("protein", request.getNutritionDetails().getProtein().doubleValue())
-                    .put("phenylalanine", request.getNutritionDetails().getPhenylalanine().doubleValue())
-                    .put("unit", request.getNutritionDetails().getUnit()));
+                    .put("fatContent", request.getNutritionDetails().getFatContent().doubleValue())
+                    .put("carbsContent", request.getNutritionDetails().getCarbsContent().doubleValue())
+                    .put("proteinContent", request.getNutritionDetails().getProteinContent().doubleValue())
+                    .put("phenylalanineContent", request.getNutritionDetails().getPhenylalanineContent().doubleValue())
+                    .put("kilocalories", request.getNutritionDetails().getKilocalories().doubleValue()));
 
             // then
             assertThat(json.get("name")).isEqualTo("Chicken Breast");
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("fat")).isEqualTo(10.5);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbs")).isEqualTo(20.0);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("protein")).isEqualTo(15.0);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")).isEqualTo(5.0);
-            assertThat(json.getJSONObject("nutritionDetails").get("unit")).isEqualTo("100g");
+            assertThat(json.getDouble("quantity")).isEqualTo(100.0);
+            assertThat(json.get("unit")).isEqualTo("GRAM");
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("fatContent")).isEqualTo(10.5);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbsContent")).isEqualTo(20.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("proteinContent")).isEqualTo(15.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanineContent")).isEqualTo(5.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("kilocalories")).isEqualTo(150.0);
         }
 
         @Test
@@ -61,35 +67,41 @@ class IngredientJsonTest {
             JSONObject json = new JSONObject(
                 "{" +
                 "\"name\": \"Apple\"," +
+                "\"quantity\": 100.0," +
+                "\"unit\": \"GRAM\"," +
                 "\"nutritionDetails\": {" +
-                "\"fat\": 0.3," +
-                "\"carbs\": 25.0," +
-                "\"protein\": 0.5," +
-                "\"phenylalanine\": 0.1," +
-                "\"unit\": \"100g\"" +
+                "\"fatContent\": 0.3," +
+                "\"carbsContent\": 25.0," +
+                "\"proteinContent\": 0.5," +
+                "\"phenylalanineContent\": 0.1," +
+                "\"kilocalories\": 50.0" +
                 "}" +
                 "}");
 
             // when
             IngredientRequestDTO request = IngredientRequestDTO.builder()
                     .name(json.getString("name"))
+                    .quantity(BigDecimal.valueOf(json.getDouble("quantity")))
+                    .unit(Unit.valueOf(json.getString("unit")))
                     .nutritionDetails(NutritionDetailsRequestDTO.builder()
-                            .fat(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fat")))
-                            .carbs(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbs")))
-                            .protein(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("protein")))
-                            .phenylalanine(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")))
-                            .unit(json.getJSONObject("nutritionDetails").getString("unit"))
+                            .fatContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fatContent")))
+                            .carbsContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbsContent")))
+                            .proteinContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("proteinContent")))
+                            .phenylalanineContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanineContent")))
+                            .kilocalories(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("kilocalories")))
                             .build())
                     .build();
 
             // then
             assertThat(request.getName()).isEqualTo("Apple");
+            assertThat(request.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
+            assertThat(request.getUnit()).isEqualTo(Unit.GRAM);
             assertThat(request.getNutritionDetails()).isNotNull();
-            assertThat(request.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("0.3"));
-            assertThat(request.getNutritionDetails().getCarbs()).isEqualByComparingTo(new BigDecimal("25.0"));
-            assertThat(request.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("0.5"));
-            assertThat(request.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("0.1"));
-            assertThat(request.getNutritionDetails().getUnit()).isEqualTo("100g");
+            assertThat(request.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("0.3"));
+            assertThat(request.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("25.0"));
+            assertThat(request.getNutritionDetails().getProteinContent()).isEqualByComparingTo(new BigDecimal("0.5"));
+            assertThat(request.getNutritionDetails().getPhenylalanineContent()).isEqualByComparingTo(new BigDecimal("0.1"));
+            assertThat(request.getNutritionDetails().getKilocalories()).isEqualByComparingTo(new BigDecimal("50.0"));
         }
     }
 
@@ -103,16 +115,18 @@ class IngredientJsonTest {
             // given
             UUID testId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
             NutritionDetailsResponseDTO nutritionDetails = NutritionDetailsResponseDTO.builder()
-                    .fat(new BigDecimal("10.5"))
-                    .carbs(new BigDecimal("20.0"))
-                    .protein(new BigDecimal("15.0"))
-                    .phenylalanine(new BigDecimal("5.0"))
-                    .unit("100g")
+                    .fatContent(new BigDecimal("10.5"))
+                    .carbsContent(new BigDecimal("20.0"))
+                    .proteinContent(new BigDecimal("15.0"))
+                    .phenylalanineContent(new BigDecimal("5.0"))
+                    .kilocalories(new BigDecimal("150.0"))
                     .build();
 
             IngredientResponseDTO response = IngredientResponseDTO.builder()
                     .id(testId)
                     .name("Chicken Breast")
+                    .quantity(new BigDecimal("100.0"))
+                    .unit(Unit.GRAM)
                     .nutritionDetails(nutritionDetails)
                     .build();
 
@@ -120,21 +134,25 @@ class IngredientJsonTest {
             JSONObject json = new JSONObject()
                 .put("id", response.getId().toString())
                 .put("name", response.getName())
+                .put("quantity", response.getQuantity().doubleValue())
+                .put("unit", response.getUnit().name())
                 .put("nutritionDetails", new JSONObject()
-                    .put("fat", response.getNutritionDetails().getFat().doubleValue())
-                    .put("carbs", response.getNutritionDetails().getCarbs().doubleValue())
-                    .put("protein", response.getNutritionDetails().getProtein().doubleValue())
-                    .put("phenylalanine", response.getNutritionDetails().getPhenylalanine().doubleValue())
-                    .put("unit", response.getNutritionDetails().getUnit()));
+                    .put("fatContent", response.getNutritionDetails().getFatContent().doubleValue())
+                    .put("carbsContent", response.getNutritionDetails().getCarbsContent().doubleValue())
+                    .put("proteinContent", response.getNutritionDetails().getProteinContent().doubleValue())
+                    .put("phenylalanineContent", response.getNutritionDetails().getPhenylalanineContent().doubleValue())
+                    .put("kilocalories", response.getNutritionDetails().getKilocalories().doubleValue()));
 
             // then
             assertThat(json.get("id")).isEqualTo("550e8400-e29b-41d4-a716-446655440000");
             assertThat(json.get("name")).isEqualTo("Chicken Breast");
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("fat")).isEqualTo(10.5);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbs")).isEqualTo(20.0);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("protein")).isEqualTo(15.0);
-            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")).isEqualTo(5.0);
-            assertThat(json.getJSONObject("nutritionDetails").get("unit")).isEqualTo("100g");
+            assertThat(json.getDouble("quantity")).isEqualTo(100.0);
+            assertThat(json.get("unit")).isEqualTo("GRAM");
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("fatContent")).isEqualTo(10.5);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbsContent")).isEqualTo(20.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("proteinContent")).isEqualTo(15.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanineContent")).isEqualTo(5.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("kilocalories")).isEqualTo(150.0);
         }
 
         @Test
@@ -145,12 +163,14 @@ class IngredientJsonTest {
                 "{" +
                 "\"id\": \"550e8400-e29b-41d4-a716-446655440000\"," +
                 "\"name\": \"Orange Juice\"," +
+                "\"quantity\": 100.0," +
+                "\"unit\": \"MILILITER\"," +
                 "\"nutritionDetails\": {" +
-                "\"fat\": 0.2," +
-                "\"carbs\": 30.0," +
-                "\"protein\": 1.0," +
-                "\"phenylalanine\": 0.3," +
-                "\"unit\": \"100ml\"" +
+                "\"fatContent\": 0.2," +
+                "\"carbsContent\": 30.0," +
+                "\"proteinContent\": 1.0," +
+                "\"phenylalanineContent\": 0.3," +
+                "\"kilocalories\": 45.0" +
                 "}" +
                 "}");
 
@@ -158,24 +178,28 @@ class IngredientJsonTest {
             IngredientResponseDTO response = IngredientResponseDTO.builder()
                     .id(UUID.fromString(json.getString("id")))
                     .name(json.getString("name"))
+                    .quantity(BigDecimal.valueOf(json.getDouble("quantity")))
+                    .unit(Unit.valueOf(json.getString("unit")))
                     .nutritionDetails(NutritionDetailsResponseDTO.builder()
-                            .fat(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fat")))
-                            .carbs(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbs")))
-                            .protein(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("protein")))
-                            .phenylalanine(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")))
-                            .unit(json.getJSONObject("nutritionDetails").getString("unit"))
+                            .fatContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fatContent")))
+                            .carbsContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbsContent")))
+                            .proteinContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("proteinContent")))
+                            .phenylalanineContent(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanineContent")))
+                            .kilocalories(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("kilocalories")))
                             .build())
                     .build();
 
             // then
             assertThat(response.getId()).isEqualTo(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
             assertThat(response.getName()).isEqualTo("Orange Juice");
+            assertThat(response.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
+            assertThat(response.getUnit()).isEqualTo(Unit.MILILITER);
             assertThat(response.getNutritionDetails()).isNotNull();
-            assertThat(response.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("0.2"));
-            assertThat(response.getNutritionDetails().getCarbs()).isEqualByComparingTo(new BigDecimal("30.0"));
-            assertThat(response.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("1.0"));
-            assertThat(response.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("0.3"));
-            assertThat(response.getNutritionDetails().getUnit()).isEqualTo("100ml");
+            assertThat(response.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("0.2"));
+            assertThat(response.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("30.0"));
+            assertThat(response.getNutritionDetails().getProteinContent()).isEqualByComparingTo(new BigDecimal("1.0"));
+            assertThat(response.getNutritionDetails().getPhenylalanineContent()).isEqualByComparingTo(new BigDecimal("0.3"));
+            assertThat(response.getNutritionDetails().getKilocalories()).isEqualByComparingTo(new BigDecimal("45.0"));
         }
     }
 }

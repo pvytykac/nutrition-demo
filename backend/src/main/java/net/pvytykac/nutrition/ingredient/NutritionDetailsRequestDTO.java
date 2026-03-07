@@ -1,6 +1,5 @@
 package net.pvytykac.nutrition.ingredient;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -18,22 +17,22 @@ import java.math.BigDecimal;
 @Builder
 public class NutritionDetailsRequestDTO {
 
-    @NotNull(message = "Fat amount is required")
-    @PositiveOrZero(message = "Fat amount must be zero or positive")
-    private BigDecimal fat;
+    @NotNull(message = "Fat content is required")
+    @PositiveOrZero(message = "Fat content must be zero or positive")
+    private BigDecimal fatContent;
 
-    @NotNull(message = "Carbs amount is required")
-    @PositiveOrZero(message = "Carbs amount must be zero or positive")
-    private BigDecimal carbs;
+    @NotNull(message = "Carbs content is required")
+    @PositiveOrZero(message = "Carbs content must be zero or positive")
+    private BigDecimal carbsContent;
 
-    @NotNull(message = "Protein amount is required")
-    @PositiveOrZero(message = "Protein amount must be zero or positive")
-    private BigDecimal protein;
+    @NotNull(message = "Protein content is required")
+    @PositiveOrZero(message = "Protein content must be zero or positive")
+    private BigDecimal proteinContent;
 
-    @NotNull(message = "Phenylalanine amount is required")
-    @PositiveOrZero(message = "Phenylalanine amount must be zero or positive")
-    private BigDecimal phenylalanine;
+    @NotNull(message = "Phenylalanine content is required")
+    @PositiveOrZero(message = "Phenylalanine content must be zero or positive")
+    private BigDecimal phenylalanineContent;
 
-    @NotBlank(message = "Unit is required")
-    private String unit;
+    @PositiveOrZero(message = "Kilocalories must be zero or positive")
+    private BigDecimal kilocalories;
 }

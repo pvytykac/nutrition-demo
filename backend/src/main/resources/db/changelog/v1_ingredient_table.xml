@@ -12,19 +12,25 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="fat_per_unit" type="DECIMAL(10,4)">
+            <column name="quantity" type="DECIMAL(10,4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="unit" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fat_content" type="DECIMAL(10,4)">
                 <constraints nullable="true"/>
             </column>
-            <column name="carbs_per_unit" type="DECIMAL(10,4)">
+            <column name="carbs_content" type="DECIMAL(10,4)">
                 <constraints nullable="true"/>
             </column>
-            <column name="protein_per_unit" type="DECIMAL(10,4)">
+            <column name="protein_content" type="DECIMAL(10,4)">
                 <constraints nullable="true"/>
             </column>
-            <column name="phenylalanine_per_unit" type="DECIMAL(10,4)">
+            <column name="phenylalanine_content" type="DECIMAL(10,4)">
                 <constraints nullable="true"/>
             </column>
-            <column name="unit" type="VARCHAR(50)">
+            <column name="kilocalories" type="DECIMAL(10,4)">
                 <constraints nullable="true"/>
             </column>
         </createTable>

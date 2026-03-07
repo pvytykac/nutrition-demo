@@ -28,6 +28,8 @@ class IngredientService {
         
         Ingredient ingredient = Ingredient.builder()
                 .name(request.getName())
+                .quantity(request.getQuantity())
+                .unit(request.getUnit())
                 .nutritionDetails(mapToNutritionDetails(request.getNutritionDetails()))
                 .build();
         
@@ -96,6 +98,8 @@ class IngredientService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         
         ingredient.setName(request.getName());
+        ingredient.setQuantity(request.getQuantity());
+        ingredient.setUnit(request.getUnit());
         ingredient.setNutritionDetails(mapToNutritionDetails(request.getNutritionDetails()));
         
         Ingredient saved = ingredientRepository.save(ingredient);
@@ -116,21 +120,21 @@ class IngredientService {
 
     private NutritionDetails mapToNutritionDetails(NutritionDetailsRequestDTO dto) {
         return NutritionDetails.builder()
-                .fat(dto.getFat())
-                .carbs(dto.getCarbs())
-                .protein(dto.getProtein())
-                .phenylalanine(dto.getPhenylalanine())
-                .unit(dto.getUnit())
+                .fatContent(dto.getFatContent())
+                .carbsContent(dto.getCarbsContent())
+                .proteinContent(dto.getProteinContent())
+                .phenylalanineContent(dto.getPhenylalanineContent())
+                .kilocalories(dto.getKilocalories())
                 .build();
     }
 
     private NutritionDetailsResponseDTO mapToNutritionDetailsResponse(NutritionDetails entity) {
         return NutritionDetailsResponseDTO.builder()
-                .fat(entity.getFat())
-                .carbs(entity.getCarbs())
-                .protein(entity.getProtein())
-                .phenylalanine(entity.getPhenylalanine())
-                .unit(entity.getUnit())
+                .fatContent(entity.getFatContent())
+                .carbsContent(entity.getCarbsContent())
+                .proteinContent(entity.getProteinContent())
+                .phenylalanineContent(entity.getPhenylalanineContent())
+                .kilocalories(entity.getKilocalories())
                 .build();
     }
 
@@ -138,6 +142,8 @@ class IngredientService {
         return IngredientResponseDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .quantity(entity.getQuantity())
+                .unit(entity.getUnit())
                 .nutritionDetails(mapToNutritionDetailsResponse(entity.getNutritionDetails()))
                 .build();
     }

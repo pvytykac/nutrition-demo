@@ -51,29 +51,33 @@ class IngredientServiceTest {
         testId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         
         NutritionDetailsRequestDTO nutritionRequest = NutritionDetailsRequestDTO.builder()
-                .fat(new BigDecimal("10.5"))
-                .carbs(new BigDecimal("20.0"))
-                .protein(new BigDecimal("15.0"))
-                .phenylalanine(new BigDecimal("5.0"))
-                .unit("100g")
+                .fatContent(new BigDecimal("10.5"))
+                .carbsContent(new BigDecimal("20.0"))
+                .proteinContent(new BigDecimal("15.0"))
+                .phenylalanineContent(new BigDecimal("5.0"))
+                .kilocalories(new BigDecimal("150.0"))
                 .build();
 
         createRequestDTO = IngredientRequestDTO.builder()
                 .name("Chicken Breast")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(nutritionRequest)
                 .build();
 
         createNutritionDetails = NutritionDetails.builder()
-                .fat(new BigDecimal("10.5"))
-                .carbs(new BigDecimal("20.0"))
-                .protein(new BigDecimal("15.0"))
-                .phenylalanine(new BigDecimal("5.0"))
-                .unit("100g")
+                .fatContent(new BigDecimal("10.5"))
+                .carbsContent(new BigDecimal("20.0"))
+                .proteinContent(new BigDecimal("15.0"))
+                .phenylalanineContent(new BigDecimal("5.0"))
+                .kilocalories(new BigDecimal("150.0"))
                 .build();
 
         createIngredient = Ingredient.builder()
                 .id(testId)
                 .name("Chicken Breast")
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(createNutritionDetails)
                 .build();
     }
@@ -95,12 +99,14 @@ class IngredientServiceTest {
             assertThat(result).isNotNull();
             assertThat(result.getId()).isEqualTo(testId);
             assertThat(result.getName()).isEqualTo("Chicken Breast");
+            assertThat(result.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
+            assertThat(result.getUnit()).isEqualTo(Unit.GRAM);
             assertThat(result.getNutritionDetails()).isNotNull();
-            assertThat(result.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("10.5"));
-            assertThat(result.getNutritionDetails().getCarbs()).isEqualByComparingTo(new BigDecimal("20.0"));
-            assertThat(result.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("15.0"));
-            assertThat(result.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("5.0"));
-            assertThat(result.getNutritionDetails().getUnit()).isEqualTo("100g");
+            assertThat(result.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("10.5"));
+            assertThat(result.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("20.0"));
+            assertThat(result.getNutritionDetails().getProteinContent()).isEqualByComparingTo(new BigDecimal("15.0"));
+            assertThat(result.getNutritionDetails().getPhenylalanineContent()).isEqualByComparingTo(new BigDecimal("5.0"));
+            assertThat(result.getNutritionDetails().getKilocalories()).isEqualByComparingTo(new BigDecimal("150.0"));
 
             verify(ingredientRepository).save(any(Ingredient.class));
         }
@@ -118,12 +124,14 @@ class IngredientServiceTest {
             // then
             Ingredient savedIngredient = ingredientCaptor.getValue();
             assertThat(savedIngredient.getName()).isEqualTo("Chicken Breast");
+            assertThat(savedIngredient.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
+            assertThat(savedIngredient.getUnit()).isEqualTo(Unit.GRAM);
             assertThat(savedIngredient.getNutritionDetails()).isNotNull();
-            assertThat(savedIngredient.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("10.5"));
-            assertThat(savedIngredient.getNutritionDetails().getCarbs()).isEqualByComparingTo(new BigDecimal("20.0"));
-            assertThat(savedIngredient.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("15.0"));
-            assertThat(savedIngredient.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("5.0"));
-            assertThat(savedIngredient.getNutritionDetails().getUnit()).isEqualTo("100g");
+            assertThat(savedIngredient.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("10.5"));
+            assertThat(savedIngredient.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("20.0"));
+            assertThat(savedIngredient.getNutritionDetails().getProteinContent()).isEqualByComparingTo(new BigDecimal("15.0"));
+            assertThat(savedIngredient.getNutritionDetails().getPhenylalanineContent()).isEqualByComparingTo(new BigDecimal("5.0"));
+            assertThat(savedIngredient.getNutritionDetails().getKilocalories()).isEqualByComparingTo(new BigDecimal("150.0"));
         }
     }
 

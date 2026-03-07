@@ -18,18 +18,18 @@ import java.math.BigDecimal;
 @Builder
 public class NutritionDetails {
 
-    @Column(name = "fat_per_unit")
-    private BigDecimal fat;
+    @Column(name = "fat_content", precision = 10, scale = 4)
+    private BigDecimal fatContent;
 
-    @Column(name = "carbs_per_unit")
-    private BigDecimal carbs;
+    @Column(name = "carbs_content", precision = 10, scale = 4)
+    private BigDecimal carbsContent;
 
-    @Column(name = "protein_per_unit")
-    private BigDecimal protein;
+    @Column(name = "protein_content", precision = 10, scale = 4)
+    private BigDecimal proteinContent;
 
-    @Column(name = "phenylalanine_per_unit")
-    private BigDecimal phenylalanine;
+    @Column(name = "phenylalanine_content", precision = 10, scale = 4)
+    private BigDecimal phenylalanineContent;
 
-    @Column(name = "unit")
-    private String unit;
+    @Column(name = "kilocalories", precision = 10, scale = 4)
+    private BigDecimal kilocalories;
 }
