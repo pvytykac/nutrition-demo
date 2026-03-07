@@ -1,5 +1,7 @@
 package net.pvytykac.nutrition.ingredient;
 
+import net.pvytykac.nutrition.util.filtering.NumberOperator;
+import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,9 +16,16 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -235,6 +244,103 @@ class IngredientServiceTest {
             // when/then
             assertThatThrownBy(() -> ingredientService.deleteIngredient(999L))
                     .isInstanceOf(IngredientNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("searchIngredients")
+    class SearchIngredients {
+
+        @Test
+        @DisplayName("should return empty page when no filters provided")
+        void shouldReturnEmptyPageWhenNoFilters() {
+            // given
+            Pageable pageable = PageRequest.of(0, 20);
+            Page<Ingredient> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+            when(ingredientRepository.findAll(nullable(Specification.class), any(Pageable.class)))
+                    .thenReturn(emptyPage);
+
+            // when
+            var result = ingredientService.searchIngredients(
+                    null, null, null, null, null, pageable);
+
+            // then
+            assertThat(result.getContent()).isEmpty();
+            assertThat(result.getTotalElements()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("should use default CONTAINS operator when nameOperator is null")
+        void shouldUseDefaultContainsOperatorWhenNameOperatorNull() {
+            // given
+            Pageable pageable = PageRequest.of(0, 20);
+            Page<Ingredient> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+            when(ingredientRepository.findAll(nullable(Specification.class), any(Pageable.class)))
+                    .thenReturn(emptyPage);
+
+            // when
+            var result = ingredientService.searchIngredients(
+                    "test", null, null, null, null, pageable);
+
+            // then
+            assertThat(result.getContent()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should use default EQUALS operator when phenylalanineOperator is null")
+        void shouldUseDefaultEqualsOperatorWhenPhenylalanineOperatorNull() {
+            // given
+            Pageable pageable = PageRequest.of(0, 20);
+            Page<Ingredient> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+            when(ingredientRepository.findAll(nullable(Specification.class), any(Pageable.class)))
+                    .thenReturn(emptyPage);
+
+            // when
+            var result = ingredientService.searchIngredients(
+                    null, null, new BigDecimal("5.0"), null, null, pageable);
+
+            // then
+            assertThat(result.getContent()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should combine name and phenylalanine filters")
+        void shouldCombineMultipleFilters() {
+            // given
+            Pageable pageable = PageRequest.of(0, 20);
+            Page<Ingredient> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+            when(ingredientRepository.findAll(nullable(Specification.class), any(Pageable.class)))
+                    .thenReturn(emptyPage);
+
+            // when
+            var result = ingredientService.searchIngredients(
+                    "test", StringOperator.CONTAINS, 
+                    new BigDecimal("5.0"), null, NumberOperator.GREATER_THAN,
+                    pageable);
+
+            // then
+            assertThat(result.getContent()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should return results when filters match")
+        void shouldReturnResultsWhenFiltersMatch() {
+            // given
+            Pageable pageable = PageRequest.of(0, 20);
+            Ingredient ingredient = createIngredient;
+            Page<Ingredient> page = new PageImpl<>(List.of(ingredient), pageable, 1);
+            when(ingredientRepository.findAll(nullable(Specification.class), any(Pageable.class)))
+                    .thenReturn(page);
+
+            // when
+            var result = ingredientService.searchIngredients(
+                    "Chicken", StringOperator.EQUALS, 
+                    new BigDecimal("5.0"), null, NumberOperator.EQUALS,
+                    pageable);
+
+            // then
+            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getTotalElements()).isEqualTo(1);
         }
     }
 }
