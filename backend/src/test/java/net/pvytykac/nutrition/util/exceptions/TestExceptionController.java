@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.shared.exceptions;
+package net.pvytykac.nutrition.util.exceptions;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

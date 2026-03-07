@@ -2,7 +2,7 @@ package net.pvytykac.nutrition.ingredient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
+import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.springframework.data.domain.Page;

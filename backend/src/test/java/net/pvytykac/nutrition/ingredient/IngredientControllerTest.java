@@ -1,7 +1,7 @@
 package net.pvytykac.nutrition.ingredient;
 
-import net.pvytykac.nutrition.config.ControllerTestBase;
-import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
+import net.pvytykac.nutrition.ControllerTestBase;
+import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.json.JSONException;

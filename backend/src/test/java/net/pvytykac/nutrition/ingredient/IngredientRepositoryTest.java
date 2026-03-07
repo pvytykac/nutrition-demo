@@ -1,6 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
-import net.pvytykac.nutrition.config.RepositoryTestBase;
+import net.pvytykac.nutrition.RepositoryTestBase;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.junit.jupiter.api.DisplayName;
