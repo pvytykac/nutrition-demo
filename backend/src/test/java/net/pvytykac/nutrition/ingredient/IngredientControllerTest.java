@@ -164,11 +164,11 @@ class IngredientControllerTest extends ControllerTestBase {
     class GetAllIngredients {
 
         @Test
-        @DisplayName("should return 200 OK with paginated content")
-        void shouldReturn200WithPagedContent() {
+        @DisplayName("should return 200 OK with paginated content and default pagination")
+        void shouldReturn200WithPagedContentAndDefaultPagination() {
             // given
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
-            PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(response));
+            PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(response), PageRequest.of(0, 20), 1);
             when(ingredientService.searchIngredients(
                     eq(null), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)))
                     .thenReturn(page);
@@ -181,8 +181,10 @@ class IngredientControllerTest extends ControllerTestBase {
                     .expectBody()
                     .jsonPath("$.content").isArray()
                     .jsonPath("$.content[0].name").isEqualTo("Chicken Breast")
-                    .jsonPath("$.totalElements").isEqualTo(1)
-                    .jsonPath("$.totalPages").isEqualTo(1);
+                    .jsonPath("$.page.size").isEqualTo(20)
+                    .jsonPath("$.page.number").isEqualTo(0)
+                    .jsonPath("$.page.totalElements").isEqualTo(1)
+                    .jsonPath("$.page.totalPages").isEqualTo(1);
         }
 
         @Test
@@ -208,7 +210,7 @@ class IngredientControllerTest extends ControllerTestBase {
         }
 
         @Test
-        @DisplayName("should return 200 OK with paging parameters")
+        @DisplayName("should return 200 OK with custom paging parameters")
         void shouldReturn200WithPagingParameters() {
             // given
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(), 
@@ -230,8 +232,11 @@ class IngredientControllerTest extends ControllerTestBase {
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
-                    .jsonPath("$.pageNumber").isEqualTo(0)
-                    .jsonPath("$.pageSize").isEqualTo(10);
+                    .jsonPath("$.content").isArray()
+                    .jsonPath("$.page.size").isEqualTo(10)
+                    .jsonPath("$.page.number").isEqualTo(0)
+                    .jsonPath("$.page.totalElements").isEqualTo(0)
+                    .jsonPath("$.page.totalPages").isEqualTo(0);
         }
     }
 

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -30,8 +27,6 @@ import java.util.UUID;
 @RequestMapping("/v1/ingredients")
 @RequiredArgsConstructor
 public class IngredientController {
-
-    private static final int DEFAULT_PAGE_SIZE = 20;
 
     private final IngredientService ingredientService;
 
@@ -50,19 +45,15 @@ public class IngredientController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllIngredients(
+    public ResponseEntity<Page<IngredientResponseDTO>> getAllIngredients(
             @RequestParam(required = false) String nameValue,
             @RequestParam(required = false) String nameOperator,
             @RequestParam(required = false) BigDecimal phenylalanineValue,
             @RequestParam(required = false) BigDecimal phenylalanineSecondValue,
             @RequestParam(required = false) String phenylalanineOperator,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            Pageable pageable) {
         
         log.debug("GET /v1/ingredients - Fetching ingredients with filters and paging");
-        
-        size = Math.min(size, DEFAULT_PAGE_SIZE);
-        Pageable pageable = PageRequest.of(page, size);
         
         StringOperator nameOp = nameOperator != null ? StringOperator.valueOf(nameOperator) : null;
         NumberOperator phenylalanineOp = phenylalanineOperator != null ? NumberOperator.valueOf(phenylalanineOperator) : null;
@@ -75,13 +66,7 @@ public class IngredientController {
                 phenylalanineOp,
                 pageable);
         
-        return ResponseEntity.ok(Map.of(
-                "content", ingredientsPage.getContent(),
-                "totalElements", ingredientsPage.getTotalElements(),
-                "totalPages", ingredientsPage.getTotalPages(),
-                "pageNumber", ingredientsPage.getNumber(),
-                "pageSize", ingredientsPage.getSize()
-        ));
+        return ResponseEntity.ok(ingredientsPage);
     }
 
     @PutMapping("/{id}")
