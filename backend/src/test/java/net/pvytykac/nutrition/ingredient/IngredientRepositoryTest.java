@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -150,7 +151,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .carbs(new BigDecimal("2.0"))
                 .protein(new BigDecimal("3.0"))
                 .phenylalanine(new BigDecimal("0.5"))
-                .unit("100g")
+                .unit("1g")
                 .build();
 
         Ingredient ingredient = Ingredient.builder()
@@ -159,7 +160,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .build();
 
         Ingredient saved = ingredientRepository.save(ingredient);
-        Long id = saved.getId();
+        UUID id = saved.getId();
 
         // when
         ingredientRepository.deleteById(id);

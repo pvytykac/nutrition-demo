@@ -2,6 +2,7 @@ package net.pvytykac.nutrition.ingredient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,14 +35,11 @@ class IngredientService {
         return mapToResponseDTO(saved);
     }
 
-    public IngredientResponseDTO getIngredientById(Long id) {
+    public IngredientResponseDTO getIngredientById(UUID id) {
         log.debug("Fetching ingredient with id: {}", id);
         
         Ingredient ingredient = ingredientRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Ingredient not found with id: {}", id);
-                    return new IngredientNotFoundException(id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         
         return mapToResponseDTO(ingredient);
     }
@@ -88,14 +87,11 @@ class IngredientService {
         return ingredients.map(this::mapToResponseDTO);
     }
 
-    public IngredientResponseDTO updateIngredient(Long id, IngredientRequestDTO request) {
+    public IngredientResponseDTO updateIngredient(UUID id, IngredientRequestDTO request) {
         log.info("Updating ingredient with id: {}", id);
         
         Ingredient ingredient = ingredientRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Ingredient not found with id: {}", id);
-                    return new IngredientNotFoundException(id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         
         ingredient.setName(request.getName());
         ingredient.setNutritionDetails(mapToNutritionDetails(request.getNutritionDetails()));
@@ -106,12 +102,11 @@ class IngredientService {
         return mapToResponseDTO(saved);
     }
 
-    public void deleteIngredient(Long id) {
+    public void deleteIngredient(UUID id) {
         log.info("Deleting ingredient with id: {}", id);
         
         if (!ingredientRepository.existsById(id)) {
-            log.warn("Ingredient not found with id: {}", id);
-            throw new IngredientNotFoundException(id);
+            throw new ResourceNotFoundException("Ingredient", id);
         }
         
         ingredientRepository.deleteById(id);

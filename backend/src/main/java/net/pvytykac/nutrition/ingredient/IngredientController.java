@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -42,7 +43,7 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IngredientResponseDTO> getIngredient(@PathVariable Long id) {
+    public ResponseEntity<IngredientResponseDTO> getIngredient(@PathVariable UUID id) {
         log.debug("GET /v1/ingredients/{} - Fetching ingredient", id);
         IngredientResponseDTO ingredient = ingredientService.getIngredientById(id);
         return ResponseEntity.ok(ingredient);
@@ -85,7 +86,7 @@ public class IngredientController {
 
     @PutMapping("/{id}")
     public ResponseEntity<IngredientResponseDTO> updateIngredient(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody IngredientRequestDTO request) {
         log.info("PUT /v1/ingredients/{} - Updating ingredient", id);
         IngredientResponseDTO updated = ingredientService.updateIngredient(id, request);
@@ -93,7 +94,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIngredient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
         log.info("DELETE /v1/ingredients/{} - Deleting ingredient", id);
         ingredientService.deleteIngredient(id);
         return ResponseEntity.noContent().build();

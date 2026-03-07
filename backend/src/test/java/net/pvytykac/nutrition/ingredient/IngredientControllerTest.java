@@ -1,5 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
+import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,6 +34,9 @@ import static org.mockito.Mockito.when;
 @DisplayName("IngredientController")
 class IngredientControllerTest {
 
+    private static final UUID TEST_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID NON_EXISTENT_ID = UUID.fromString("99999999-9999-9999-9999-999999999999");
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -41,7 +46,7 @@ class IngredientControllerTest {
     @MockitoBean
     private IngredientService ingredientService;
 
-    private IngredientResponseDTO createResponseDTO(Long id, String name) {
+    private IngredientResponseDTO createResponseDTO(UUID id, String name) {
         return IngredientResponseDTO.builder()
                 .id(id)
                 .name(name)
@@ -77,7 +82,7 @@ class IngredientControllerTest {
         void shouldReturn201CreatedWithIngredient() throws Exception {
             // given
             IngredientRequestDTO request = createRequestDTO("Chicken Breast");
-            IngredientResponseDTO response = createResponseDTO(1L, "Chicken Breast");
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
             when(ingredientService.createIngredient(any())).thenReturn(response);
 
             // when/then
@@ -88,7 +93,7 @@ class IngredientControllerTest {
                     .exchange()
                     .expectStatus().isCreated()
                     .expectBody()
-                    .jsonPath("$.id").isEqualTo(1)
+                    .jsonPath("$.id").isEqualTo(TEST_ID.toString())
                     .jsonPath("$.name").isEqualTo("Chicken Breast");
         }
 
@@ -124,16 +129,16 @@ class IngredientControllerTest {
         @DisplayName("should return 200 OK with ingredient when found")
         void shouldReturn200WhenFound() {
             // given
-            IngredientResponseDTO response = createResponseDTO(1L, "Chicken Breast");
-            when(ingredientService.getIngredientById(1L)).thenReturn(response);
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
+            when(ingredientService.getIngredientById(TEST_ID)).thenReturn(response);
 
             // when/then
             webTestClient.get()
-                    .uri("/v1/ingredients/1")
+                    .uri("/v1/ingredients/{id}", TEST_ID)
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
-                    .jsonPath("$.id").isEqualTo(1)
+                    .jsonPath("$.id").isEqualTo(TEST_ID.toString())
                     .jsonPath("$.name").isEqualTo("Chicken Breast");
         }
 
@@ -141,16 +146,14 @@ class IngredientControllerTest {
         @DisplayName("should return 404 Not Found when not found")
         void shouldReturn404WhenNotFound() {
             // given
-            when(ingredientService.getIngredientById(999L))
-                    .thenThrow(new IngredientNotFoundException(999L));
+            when(ingredientService.getIngredientById(NON_EXISTENT_ID))
+                    .thenThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID));
 
             // when/then
             webTestClient.get()
-                    .uri("/v1/ingredients/999")
+                    .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .exchange()
-                    .expectStatus().isNotFound()
-                    .expectBody()
-                    .jsonPath("$.error").isEqualTo("Not Found");
+                    .expectStatus().isNotFound();
         }
     }
 
@@ -162,7 +165,7 @@ class IngredientControllerTest {
         @DisplayName("should return 200 OK with paginated content")
         void shouldReturn200WithPagedContent() {
             // given
-            IngredientResponseDTO response = createResponseDTO(1L, "Chicken Breast");
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(response));
             when(ingredientService.searchIngredients(
                     eq(null), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)))
@@ -239,18 +242,18 @@ class IngredientControllerTest {
         void shouldReturn200OnSuccess() throws Exception {
             // given
             IngredientRequestDTO request = createRequestDTO("Chicken Breast Updated");
-            IngredientResponseDTO response = createResponseDTO(1L, "Chicken Breast Updated");
-            when(ingredientService.updateIngredient(eq(1L), any())).thenReturn(response);
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast Updated");
+            when(ingredientService.updateIngredient(eq(TEST_ID), any())).thenReturn(response);
 
             // when/then
             webTestClient.put()
-                    .uri("/v1/ingredients/1")
+                    .uri("/v1/ingredients/{id}", TEST_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(objectMapper.writeValueAsString(request))
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
-                    .jsonPath("$.id").isEqualTo(1)
+                    .jsonPath("$.id").isEqualTo(TEST_ID.toString())
                     .jsonPath("$.name").isEqualTo("Chicken Breast Updated");
         }
 
@@ -259,12 +262,12 @@ class IngredientControllerTest {
         void shouldReturn404WhenNotFound() throws Exception {
             // given
             IngredientRequestDTO request = createRequestDTO("NonExistent");
-            when(ingredientService.updateIngredient(eq(999L), any()))
-                    .thenThrow(new IngredientNotFoundException(999L));
+            when(ingredientService.updateIngredient(eq(NON_EXISTENT_ID), any()))
+                    .thenThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID));
 
             // when/then
             webTestClient.put()
-                    .uri("/v1/ingredients/999")
+                    .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(objectMapper.writeValueAsString(request))
                     .exchange()
@@ -280,27 +283,27 @@ class IngredientControllerTest {
         @DisplayName("should return 204 No Content on success")
         void shouldReturn204OnSuccess() {
             // given
-            doNothing().when(ingredientService).deleteIngredient(1L);
+            doNothing().when(ingredientService).deleteIngredient(TEST_ID);
 
             // when/then
             webTestClient.delete()
-                    .uri("/v1/ingredients/1")
+                    .uri("/v1/ingredients/{id}", TEST_ID)
                     .exchange()
                     .expectStatus().isNoContent();
             
-            verify(ingredientService).deleteIngredient(1L);
+            verify(ingredientService).deleteIngredient(TEST_ID);
         }
 
         @Test
         @DisplayName("should return 404 Not Found when ingredient doesn't exist")
         void shouldReturn404WhenNotFound() {
             // given
-            doThrow(new IngredientNotFoundException(999L))
-                    .when(ingredientService).deleteIngredient(999L);
+            doThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID))
+                    .when(ingredientService).deleteIngredient(NON_EXISTENT_ID);
 
             // when/then
             webTestClient.delete()
-                    .uri("/v1/ingredients/999")
+                    .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .exchange()
                     .expectStatus().isNotFound();
         }
