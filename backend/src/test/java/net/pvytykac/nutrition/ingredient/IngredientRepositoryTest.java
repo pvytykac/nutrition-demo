@@ -1,6 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
-import net.pvytykac.nutrition.config.IntegrationTestBase;
+import net.pvytykac.nutrition.config.RepositoryTestBase;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("IngredientRepository")
-class IngredientRepositoryTest extends IntegrationTestBase {
+class IngredientRepositoryTest extends RepositoryTestBase {
 
     @Autowired
     private IngredientRepository ingredientRepository;
@@ -68,7 +68,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .nutritionDetails(nutritionDetails)
                 .build();
 
-        ingredientRepository.save(ingredient);
+        testEntityManager.persistFlushFind(ingredient);
 
         // when
         Optional<Ingredient> result = ingredientRepository.findByName("Apple Juice");
@@ -105,7 +105,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .nutritionDetails(nutritionDetails)
                 .build();
 
-        ingredientRepository.save(ingredient);
+        testEntityManager.persistFlushFind(ingredient);
 
         // when / then
         assertThat(ingredientRepository.existsByName("Salt")).isTrue();
@@ -132,8 +132,8 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .unit("100g")
                 .build();
 
-        ingredientRepository.save(Ingredient.builder().name("Ingredient1").nutritionDetails(nutrition1).build());
-        ingredientRepository.save(Ingredient.builder().name("Ingredient2").nutritionDetails(nutrition2).build());
+        testEntityManager.persistFlushFind(Ingredient.builder().name("Ingredient1").nutritionDetails(nutrition1).build());
+        testEntityManager.persistFlushFind(Ingredient.builder().name("Ingredient2").nutritionDetails(nutrition2).build());
 
         // when
         var result = ingredientRepository.findAll();
@@ -159,7 +159,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .nutritionDetails(nutritionDetails)
                 .build();
 
-        Ingredient saved = ingredientRepository.save(ingredient);
+        Ingredient saved = testEntityManager.persistFlushFind(ingredient);
         UUID id = saved.getId();
 
         // when
@@ -305,7 +305,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
 
     private void saveTestIngredients() {
         // Apple - low phenylalanine
-        ingredientRepository.save(Ingredient.builder()
+        testEntityManager.persistFlushFind(Ingredient.builder()
                 .name("Apple")
                 .nutritionDetails(NutritionDetails.builder()
                         .fat(new BigDecimal("0.3"))
@@ -317,7 +317,7 @@ class IngredientRepositoryTest extends IntegrationTestBase {
                 .build());
         
         // Banana - higher phenylalanine
-        ingredientRepository.save(Ingredient.builder()
+        testEntityManager.persistFlushFind(Ingredient.builder()
                 .name("Banana")
                 .nutritionDetails(NutritionDetails.builder()
                         .fat(new BigDecimal("0.2"))

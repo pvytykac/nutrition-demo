@@ -1,24 +1,17 @@
 package net.pvytykac.nutrition.shared.exceptions;
 
-import net.pvytykac.nutrition.shared.exceptions.TestExceptionController.TestRequest;
+import net.pvytykac.nutrition.config.ControllerTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.Matchers.containsString;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@WebMvcTest(controllers = {GlobalExceptionHandler.class, TestExceptionController.class})
 @DisplayName("GlobalExceptionHandler")
-class GlobalExceptionHandlerTest {
-    
-    @Autowired
-    private WebTestClient webTestClient;
+class GlobalExceptionHandlerTest extends ControllerTestBase {
     
     @Nested
     @DisplayName("ResourceNotFoundException handling")
@@ -93,9 +86,10 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should return 400 for validation errors")
         void shouldReturn400ForValidationErrors() {
             // given
-            TestRequest invalidRequest = new TestRequest();
-            invalidRequest.setName("");  // blank - invalid
-            invalidRequest.setValue(-1);  // negative - invalid
+            TestExceptionController.TestRequest invalidRequest = TestExceptionController.TestRequest.builder()
+                    .name("")
+                    .value(-1)
+                    .build();
             
             // when/then
             webTestClient.post()
@@ -107,7 +101,7 @@ class GlobalExceptionHandlerTest {
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(400)
                     .jsonPath("$.title").isEqualTo("Bad Request")
-                    .jsonPath("$.detail").isEqualTo("Validation failed")
+                    .jsonPath("$.detail").isEqualTo("Invalid request content.")
                     .jsonPath("$.instance").value(containsString("/test-exceptions/validation-error"));
         }
         
@@ -115,9 +109,10 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should return 400 when name is blank")
         void shouldReturn400WhenNameIsBlank() {
             // given
-            TestRequest invalidRequest = new TestRequest();
-            invalidRequest.setName("   ");  // blank
-            invalidRequest.setValue(10);    // valid
+            TestExceptionController.TestRequest invalidRequest = TestExceptionController.TestRequest.builder()
+                    .name("   ")
+                    .value(10)
+                    .build();
             
             // when/then
             webTestClient.post()
@@ -134,9 +129,10 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should return 400 when value is negative")
         void shouldReturn400WhenValueIsNegative() {
             // given
-            TestRequest invalidRequest = new TestRequest();
-            invalidRequest.setName("test");
-            invalidRequest.setValue(-5);
+            TestExceptionController.TestRequest invalidRequest = TestExceptionController.TestRequest.builder()
+                    .name("test")
+                    .value(-5)
+                    .build();
             
             // when/then
             webTestClient.post()
@@ -153,9 +149,10 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should return 400 when value is null")
         void shouldReturn400WhenValueIsNull() {
             // given
-            TestRequest invalidRequest = new TestRequest();
-            invalidRequest.setName("test");
-            invalidRequest.setValue(null);
+            TestExceptionController.TestRequest invalidRequest = TestExceptionController.TestRequest.builder()
+                    .name("test")
+                    .value(null)
+                    .build();
             
             // when/then
             webTestClient.post()
@@ -170,9 +167,10 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should succeed with valid request")
         void shouldSucceedWithValidRequest() {
             // given
-            TestRequest validRequest = new TestRequest();
-            validRequest.setName("test");
-            validRequest.setValue(10);
+            TestExceptionController.TestRequest validRequest = TestExceptionController.TestRequest.builder()
+                    .name("test")
+                    .value(10)
+                    .build();
             
             // when/then
             webTestClient.post()
