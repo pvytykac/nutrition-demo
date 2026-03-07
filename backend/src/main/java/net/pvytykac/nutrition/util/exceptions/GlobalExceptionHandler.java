@@ -1,6 +1,8 @@
 package net.pvytykac.nutrition.util.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,6 +51,42 @@ public class GlobalExceptionHandler {
         );
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         
+        return problemDetail;
+    }
+    
+    /**
+     * Handles ConstraintViolationException - maps to 409 CONFLICT.
+     * This occurs when a unique constraint is violated (e.g., duplicate ingredient name).
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(
+            ConstraintViolationException ex,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT,
+            "A constraint violation occurred"
+        );
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
+    }
+
+    /**
+     * Handles DataIntegrityViolationException - maps to 409 CONFLICT.
+     * This occurs when a database-level unique constraint is violated.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT,
+            "A data integrity constraint was violated. The resource may already exist."
+        );
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
         return problemDetail;
     }
 }
