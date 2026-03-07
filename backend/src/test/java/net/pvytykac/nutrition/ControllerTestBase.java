@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.config;
+package net.pvytykac.nutrition;
 
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.TestPropertySource;

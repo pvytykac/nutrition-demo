@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.shared.exceptions;
+package net.pvytykac.nutrition.util.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

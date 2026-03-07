@@ -1,6 +1,6 @@
-package net.pvytykac.nutrition.shared.exceptions;
+package net.pvytykac.nutrition.util.exceptions;
 
-import net.pvytykac.nutrition.config.ControllerTestBase;
+import net.pvytykac.nutrition.ControllerTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
