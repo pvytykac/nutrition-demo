@@ -1,6 +1,5 @@
 .opencode
-agents.md
-readme.md
+AGENTS.md
 backend/target
 backend/.idea
 *.classpath
