@@ -11,7 +11,8 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 @TestPropertySource(properties = {
     "spring.datasource.url=jdbc:tc:postgresql:18:///test",
     "spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver",
-    "spring.jpa.hibernate.ddl-auto=update"
+    "spring.jpa.hibernate.ddl-auto=update",
+    "spring.liquibase.enabled=false"
 })
 public abstract class RepositoryTestBase {
 

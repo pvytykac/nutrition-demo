@@ -42,12 +42,14 @@ class IngredientControllerTest extends ControllerTestBase {
         return IngredientResponseDTO.builder()
                 .id(id)
                 .name(name)
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(NutritionDetailsResponseDTO.builder()
-                        .fat(new BigDecimal("10.5"))
-                        .carbs(new BigDecimal("20.0"))
-                        .protein(new BigDecimal("15.0"))
-                        .phenylalanine(new BigDecimal("5.0"))
-                        .unit("100g")
+                        .fatContent(new BigDecimal("10.5"))
+                        .carbsContent(new BigDecimal("20.0"))
+                        .proteinContent(new BigDecimal("15.0"))
+                        .phenylalanineContent(new BigDecimal("5.0"))
+                        .kilocalories(new BigDecimal("150.0"))
                         .build())
                 .build();
     }
@@ -55,12 +57,14 @@ class IngredientControllerTest extends ControllerTestBase {
     private IngredientRequestDTO createRequestDTO(String name) {
         return IngredientRequestDTO.builder()
                 .name(name)
+                .quantity(new BigDecimal("100.0"))
+                .unit(Unit.GRAM)
                 .nutritionDetails(NutritionDetailsRequestDTO.builder()
-                        .fat(new BigDecimal("10.5"))
-                        .carbs(new BigDecimal("20.0"))
-                        .protein(new BigDecimal("15.0"))
-                        .phenylalanine(new BigDecimal("5.0"))
-                        .unit("100g")
+                        .fatContent(new BigDecimal("10.5"))
+                        .carbsContent(new BigDecimal("20.0"))
+                        .proteinContent(new BigDecimal("15.0"))
+                        .phenylalanineContent(new BigDecimal("5.0"))
+                        .kilocalories(new BigDecimal("150.0"))
                         .build())
                 .build();
     }
@@ -68,22 +72,26 @@ class IngredientControllerTest extends ControllerTestBase {
     private JSONObject createRequestJSON(String name) throws JSONException {
         return new JSONObject()
             .put("name", name)
+            .put("quantity", 100.0)
+            .put("unit", "GRAM")
             .put("nutritionDetails", new JSONObject()
-                .put("fat", 10.5)
-                .put("carbs", 20.0)
-                .put("protein", 15.0)
-                .put("phenylalanine", 5.0)
-                .put("unit", "100g"));
+                .put("fatContent", 10.5)
+                .put("carbsContent", 20.0)
+                .put("proteinContent", 15.0)
+                .put("phenylalanineContent", 5.0)
+                .put("kilocalories", 150.0));
     }
 
     private JSONObject createRequestJSONWithoutName() throws JSONException {
         return new JSONObject()
+            .put("quantity", 100.0)
+            .put("unit", "GRAM")
             .put("nutritionDetails", new JSONObject()
-                .put("fat", 10.5)
-                .put("carbs", 20.0)
-                .put("protein", 15.0)
-                .put("phenylalanine", 5.0)
-                .put("unit", "100g"));
+                .put("fatContent", 10.5)
+                .put("carbsContent", 20.0)
+                .put("proteinContent", 15.0)
+                .put("phenylalanineContent", 5.0)
+                .put("kilocalories", 150.0));
     }
 
     @Nested
