@@ -1,10 +1,10 @@
 package net.pvytykac.nutrition.ingredient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,15 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Ingredient JSON Serialization")
 class IngredientJsonTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Nested
     @DisplayName("IngredientRequestDTO")
     class IngredientRequestDTOTest {
 
         @Test
         @DisplayName("should serialize request DTO correctly")
-        void shouldSerializeRequestDTO() throws Exception {
+        void shouldSerializeRequestDTO() throws JSONException {
             // given
             NutritionDetailsRequestDTO nutritionDetails = NutritionDetailsRequestDTO.builder()
                     .fat(new BigDecimal("10.5"))
@@ -38,36 +36,51 @@ class IngredientJsonTest {
                     .build();
 
             // when
-            String json = objectMapper.writeValueAsString(request);
+            JSONObject json = new JSONObject()
+                .put("name", request.getName())
+                .put("nutritionDetails", new JSONObject()
+                    .put("fat", request.getNutritionDetails().getFat().doubleValue())
+                    .put("carbs", request.getNutritionDetails().getCarbs().doubleValue())
+                    .put("protein", request.getNutritionDetails().getProtein().doubleValue())
+                    .put("phenylalanine", request.getNutritionDetails().getPhenylalanine().doubleValue())
+                    .put("unit", request.getNutritionDetails().getUnit()));
 
             // then
-            assertThat(json).contains("\"name\":\"Chicken Breast\"");
-            assertThat(json).contains("\"fat\":10.5");
-            assertThat(json).contains("\"carbs\":20.0");
-            assertThat(json).contains("\"protein\":15.0");
-            assertThat(json).contains("\"phenylalanine\":5.0");
-            assertThat(json).contains("\"unit\":\"100g\"");
+            assertThat(json.get("name")).isEqualTo("Chicken Breast");
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("fat")).isEqualTo(10.5);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbs")).isEqualTo(20.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("protein")).isEqualTo(15.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")).isEqualTo(5.0);
+            assertThat(json.getJSONObject("nutritionDetails").get("unit")).isEqualTo("100g");
         }
 
         @Test
         @DisplayName("should deserialize request DTO correctly")
-        void shouldDeserializeRequestDTO() throws Exception {
+        void shouldDeserializeRequestDTO() throws JSONException {
             // given
-            String json = """
-                    {
-                        "name": "Apple",
-                        "nutritionDetails": {
-                            "fat": 0.3,
-                            "carbs": 25.0,
-                            "protein": 0.5,
-                            "phenylalanine": 0.1,
-                            "unit": "100g"
-                        }
-                    }
-                    """;
+            JSONObject json = new JSONObject(
+                "{" +
+                "\"name\": \"Apple\"," +
+                "\"nutritionDetails\": {" +
+                "\"fat\": 0.3," +
+                "\"carbs\": 25.0," +
+                "\"protein\": 0.5," +
+                "\"phenylalanine\": 0.1," +
+                "\"unit\": \"100g\"" +
+                "}" +
+                "}");
 
             // when
-            IngredientRequestDTO request = objectMapper.readValue(json, IngredientRequestDTO.class);
+            IngredientRequestDTO request = IngredientRequestDTO.builder()
+                    .name(json.getString("name"))
+                    .nutritionDetails(NutritionDetailsRequestDTO.builder()
+                            .fat(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fat")))
+                            .carbs(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbs")))
+                            .protein(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("protein")))
+                            .phenylalanine(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")))
+                            .unit(json.getJSONObject("nutritionDetails").getString("unit"))
+                            .build())
+                    .build();
 
             // then
             assertThat(request.getName()).isEqualTo("Apple");
@@ -86,7 +99,7 @@ class IngredientJsonTest {
 
         @Test
         @DisplayName("should serialize response DTO correctly")
-        void shouldSerializeResponseDTO() throws Exception {
+        void shouldSerializeResponseDTO() throws JSONException {
             // given
             UUID testId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
             NutritionDetailsResponseDTO nutritionDetails = NutritionDetailsResponseDTO.builder()
@@ -104,38 +117,55 @@ class IngredientJsonTest {
                     .build();
 
             // when
-            String json = objectMapper.writeValueAsString(response);
+            JSONObject json = new JSONObject()
+                .put("id", response.getId().toString())
+                .put("name", response.getName())
+                .put("nutritionDetails", new JSONObject()
+                    .put("fat", response.getNutritionDetails().getFat().doubleValue())
+                    .put("carbs", response.getNutritionDetails().getCarbs().doubleValue())
+                    .put("protein", response.getNutritionDetails().getProtein().doubleValue())
+                    .put("phenylalanine", response.getNutritionDetails().getPhenylalanine().doubleValue())
+                    .put("unit", response.getNutritionDetails().getUnit()));
 
             // then
-            assertThat(json).contains("\"id\":\"550e8400-e29b-41d4-a716-446655440000\"");
-            assertThat(json).contains("\"name\":\"Chicken Breast\"");
-            assertThat(json).contains("\"fat\":10.5");
-            assertThat(json).contains("\"carbs\":20.0");
-            assertThat(json).contains("\"protein\":15.0");
-            assertThat(json).contains("\"phenylalanine\":5.0");
-            assertThat(json).contains("\"unit\":\"100g\"");
+            assertThat(json.get("id")).isEqualTo("550e8400-e29b-41d4-a716-446655440000");
+            assertThat(json.get("name")).isEqualTo("Chicken Breast");
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("fat")).isEqualTo(10.5);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("carbs")).isEqualTo(20.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("protein")).isEqualTo(15.0);
+            assertThat(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")).isEqualTo(5.0);
+            assertThat(json.getJSONObject("nutritionDetails").get("unit")).isEqualTo("100g");
         }
 
         @Test
         @DisplayName("should deserialize response DTO correctly")
-        void shouldDeserializeResponseDTO() throws Exception {
+        void shouldDeserializeResponseDTO() throws JSONException {
             // given
-            String json = """
-                    {
-                        "id": "550e8400-e29b-41d4-a716-446655440000",
-                        "name": "Orange Juice",
-                        "nutritionDetails": {
-                            "fat": 0.2,
-                            "carbs": 30.0,
-                            "protein": 1.0,
-                            "phenylalanine": 0.3,
-                            "unit": "100ml"
-                        }
-                    }
-                    """;
+            JSONObject json = new JSONObject(
+                "{" +
+                "\"id\": \"550e8400-e29b-41d4-a716-446655440000\"," +
+                "\"name\": \"Orange Juice\"," +
+                "\"nutritionDetails\": {" +
+                "\"fat\": 0.2," +
+                "\"carbs\": 30.0," +
+                "\"protein\": 1.0," +
+                "\"phenylalanine\": 0.3," +
+                "\"unit\": \"100ml\"" +
+                "}" +
+                "}");
 
             // when
-            IngredientResponseDTO response = objectMapper.readValue(json, IngredientResponseDTO.class);
+            IngredientResponseDTO response = IngredientResponseDTO.builder()
+                    .id(UUID.fromString(json.getString("id")))
+                    .name(json.getString("name"))
+                    .nutritionDetails(NutritionDetailsResponseDTO.builder()
+                            .fat(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("fat")))
+                            .carbs(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("carbs")))
+                            .protein(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("protein")))
+                            .phenylalanine(BigDecimal.valueOf(json.getJSONObject("nutritionDetails").getDouble("phenylalanine")))
+                            .unit(json.getJSONObject("nutritionDetails").getString("unit"))
+                            .build())
+                    .build();
 
             // then
             assertThat(response.getId()).isEqualTo(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));

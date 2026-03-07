@@ -3,6 +3,8 @@ package net.pvytykac.nutrition.ingredient;
 import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,11 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,9 +39,6 @@ class IngredientControllerTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockitoBean
     private IngredientService ingredientService;
@@ -73,13 +70,34 @@ class IngredientControllerTest {
                 .build();
     }
 
+    private JSONObject createRequestJSON(String name) throws JSONException {
+        return new JSONObject()
+            .put("name", name)
+            .put("nutritionDetails", new JSONObject()
+                .put("fat", 10.5)
+                .put("carbs", 20.0)
+                .put("protein", 15.0)
+                .put("phenylalanine", 5.0)
+                .put("unit", "100g"));
+    }
+
+    private JSONObject createRequestJSONWithoutName() throws JSONException {
+        return new JSONObject()
+            .put("nutritionDetails", new JSONObject()
+                .put("fat", 10.5)
+                .put("carbs", 20.0)
+                .put("protein", 15.0)
+                .put("phenylalanine", 5.0)
+                .put("unit", "100g"));
+    }
+
     @Nested
     @DisplayName("POST /v1/ingredients")
     class CreateIngredient {
 
         @Test
         @DisplayName("should return 201 Created with ingredient on success")
-        void shouldReturn201CreatedWithIngredient() throws Exception {
+        void shouldReturn201CreatedWithIngredient() throws JSONException {
             // given
             IngredientRequestDTO request = createRequestDTO("Chicken Breast");
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
@@ -89,7 +107,7 @@ class IngredientControllerTest {
             webTestClient.post()
                     .uri("/v1/ingredients")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(objectMapper.writeValueAsString(request))
+                    .bodyValue(createRequestJSON("Chicken Breast").toString())
                     .exchange()
                     .expectStatus().isCreated()
                     .expectBody()
@@ -99,23 +117,12 @@ class IngredientControllerTest {
 
         @Test
         @DisplayName("should return 400 Bad Request when name is missing")
-        void shouldReturn400WhenNameMissing() throws Exception {
-            // given
-            Map<String, Object> request = Map.of(
-                    "nutritionDetails", Map.of(
-                            "fat", 10.5,
-                            "carbs", 20.0,
-                            "protein", 15.0,
-                            "phenylalanine", 5.0,
-                            "unit", "100g"
-                    )
-            );
-
+        void shouldReturn400WhenNameMissing() throws JSONException {
             // when/then
             webTestClient.post()
                     .uri("/v1/ingredients")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(objectMapper.writeValueAsString(request))
+                    .bodyValue(createRequestJSONWithoutName().toString())
                     .exchange()
                     .expectStatus().isBadRequest();
         }
@@ -239,7 +246,7 @@ class IngredientControllerTest {
 
         @Test
         @DisplayName("should return 200 OK with updated ingredient")
-        void shouldReturn200OnSuccess() throws Exception {
+        void shouldReturn200OnSuccess() throws JSONException {
             // given
             IngredientRequestDTO request = createRequestDTO("Chicken Breast Updated");
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast Updated");
@@ -249,7 +256,7 @@ class IngredientControllerTest {
             webTestClient.put()
                     .uri("/v1/ingredients/{id}", TEST_ID)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(objectMapper.writeValueAsString(request))
+                    .bodyValue(createRequestJSON("Chicken Breast Updated").toString())
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
@@ -259,7 +266,7 @@ class IngredientControllerTest {
 
         @Test
         @DisplayName("should return 404 Not Found when ingredient doesn't exist")
-        void shouldReturn404WhenNotFound() throws Exception {
+        void shouldReturn404WhenNotFound() throws JSONException {
             // given
             IngredientRequestDTO request = createRequestDTO("NonExistent");
             when(ingredientService.updateIngredient(eq(NON_EXISTENT_ID), any()))
@@ -269,7 +276,7 @@ class IngredientControllerTest {
             webTestClient.put()
                     .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(objectMapper.writeValueAsString(request))
+                    .bodyValue(createRequestJSON("NonExistent").toString())
                     .exchange()
                     .expectStatus().isNotFound();
         }
