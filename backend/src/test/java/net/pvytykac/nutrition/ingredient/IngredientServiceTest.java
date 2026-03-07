@@ -202,7 +202,7 @@ class IngredientServiceTest {
         @DisplayName("should update ingredient successfully")
         void shouldUpdateIngredientSuccessfully() {
             // given
-            when(ingredientRepository.findById(testId)).thenReturn(Optional.of(createIngredient));
+            when(ingredientRepository.findByIdForUpdate(testId)).thenReturn(Optional.of(createIngredient));
             when(ingredientRepository.save(any(Ingredient.class))).thenReturn(createIngredient);
 
             // when
@@ -218,7 +218,7 @@ class IngredientServiceTest {
         void shouldThrowExceptionWhenUpdatingNonExistentIngredient() {
             // given
             UUID nonExistentId = UUID.fromString("99999999-9999-9999-9999-999999999999");
-            when(ingredientRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+            when(ingredientRepository.findByIdForUpdate(nonExistentId)).thenReturn(Optional.empty());
 
             // when/then
             assertThatThrownBy(() -> ingredientService.updateIngredient(nonExistentId, createRequestDTO))
@@ -236,13 +236,13 @@ class IngredientServiceTest {
         @DisplayName("should delete ingredient successfully")
         void shouldDeleteIngredientSuccessfully() {
             // given
-            when(ingredientRepository.existsById(testId)).thenReturn(true);
+            when(ingredientRepository.findByIdForUpdate(testId)).thenReturn(Optional.of(createIngredient));
 
             // when
             ingredientService.deleteIngredient(testId);
 
             // then
-            verify(ingredientRepository).deleteById(testId);
+            verify(ingredientRepository).delete(createIngredient);
         }
 
         @Test
@@ -250,7 +250,7 @@ class IngredientServiceTest {
         void shouldThrowExceptionWhenDeletingNonExistentIngredient() {
             // given
             UUID nonExistentId = UUID.fromString("99999999-9999-9999-9999-999999999999");
-            when(ingredientRepository.existsById(nonExistentId)).thenReturn(false);
+            when(ingredientRepository.findByIdForUpdate(nonExistentId)).thenReturn(Optional.empty());
 
             // when/then
             assertThatThrownBy(() -> ingredientService.deleteIngredient(nonExistentId))

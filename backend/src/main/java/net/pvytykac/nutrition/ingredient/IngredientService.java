@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 class IngredientService {
 
     private final IngredientRepository ingredientRepository;
@@ -90,7 +92,7 @@ class IngredientService {
     public IngredientResponseDTO updateIngredient(UUID id, IngredientRequestDTO request) {
         log.info("Updating ingredient with id: {}", id);
         
-        Ingredient ingredient = ingredientRepository.findById(id)
+        Ingredient ingredient = ingredientRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         
         ingredient.setName(request.getName());
@@ -105,11 +107,10 @@ class IngredientService {
     public void deleteIngredient(UUID id) {
         log.info("Deleting ingredient with id: {}", id);
         
-        if (!ingredientRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Ingredient", id);
-        }
+        Ingredient ingredient = ingredientRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         
-        ingredientRepository.deleteById(id);
+        ingredientRepository.delete(ingredient);
         log.info("Deleted ingredient with id: {}", id);
     }
 
