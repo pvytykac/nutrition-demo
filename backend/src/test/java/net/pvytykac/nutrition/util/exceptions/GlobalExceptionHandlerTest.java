@@ -183,4 +183,44 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .isEqualTo("Success");
         }
     }
+    
+    @Nested
+    @DisplayName("Constraint violation exception handling")
+    class ConstraintViolationExceptionTests {
+        
+        @Test
+        @DisplayName("should return 409 Conflict for ConstraintViolationException")
+        void shouldReturn409ForConstraintViolation() {
+            // when/then
+            webTestClient.get()
+                    .uri("/test-exceptions/constraint-violation")
+                    .exchange()
+                    .expectStatus().isEqualTo(409)
+                    .expectBody()
+                    .jsonPath("$.status").isEqualTo(409)
+                    .jsonPath("$.title").isEqualTo("Conflict")
+                    .jsonPath("$.detail").isEqualTo("A constraint violation occurred")
+                    .jsonPath("$.instance").value(containsString("/test-exceptions/constraint-violation"));
+        }
+    }
+    
+    @Nested
+    @DisplayName("Data integrity violation exception handling")
+    class DataIntegrityViolationExceptionTests {
+        
+        @Test
+        @DisplayName("should return 409 Conflict for DataIntegrityViolationException")
+        void shouldReturn409ForDataIntegrityViolation() {
+            // when/then
+            webTestClient.get()
+                    .uri("/test-exceptions/data-integrity-violation")
+                    .exchange()
+                    .expectStatus().isEqualTo(409)
+                    .expectBody()
+                    .jsonPath("$.status").isEqualTo(409)
+                    .jsonPath("$.title").isEqualTo("Conflict")
+                    .jsonPath("$.detail").isEqualTo("A data integrity constraint was violated. The resource may already exist.")
+                    .jsonPath("$.instance").value(containsString("/test-exceptions/data-integrity-violation"));
+        }
+    }
 }
