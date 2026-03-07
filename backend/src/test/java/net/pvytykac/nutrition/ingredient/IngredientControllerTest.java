@@ -1,5 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
+import net.pvytykac.nutrition.config.ControllerTestBase;
 import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
@@ -10,13 +11,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,15 +29,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(IngredientController.class)
-@AutoConfigureWebTestClient
 @DisplayName("IngredientController")
-class IngredientControllerTest {
+class IngredientControllerTest extends ControllerTestBase {
 
     private static final UUID TEST_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
     private static final UUID NON_EXISTENT_ID = UUID.fromString("99999999-9999-9999-9999-999999999999");
-
-    @Autowired
-    private WebTestClient webTestClient;
 
     @MockitoBean
     private IngredientService ingredientService;
