@@ -1,5 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
+import net.pvytykac.nutrition.shared.exceptions.ResourceNotFoundException;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,12 +41,15 @@ class IngredientServiceTest {
     @InjectMocks
     private IngredientService ingredientService;
 
+    private UUID testId;
     private IngredientRequestDTO createRequestDTO;
     private Ingredient createIngredient;
     private NutritionDetails createNutritionDetails;
 
     @BeforeEach
     void setUp() {
+        testId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        
         NutritionDetailsRequestDTO nutritionRequest = NutritionDetailsRequestDTO.builder()
                 .fat(new BigDecimal("10.5"))
                 .carbs(new BigDecimal("20.0"))
@@ -67,7 +72,7 @@ class IngredientServiceTest {
                 .build();
 
         createIngredient = Ingredient.builder()
-                .id(1L)
+                .id(testId)
                 .name("Chicken Breast")
                 .nutritionDetails(createNutritionDetails)
                 .build();
@@ -88,7 +93,7 @@ class IngredientServiceTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.getId()).isEqualTo(1L);
+            assertThat(result.getId()).isEqualTo(testId);
             assertThat(result.getName()).isEqualTo("Chicken Breast");
             assertThat(result.getNutritionDetails()).isNotNull();
             assertThat(result.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("10.5"));
@@ -130,14 +135,14 @@ class IngredientServiceTest {
         @DisplayName("should return ingredient when found")
         void shouldReturnIngredientWhenFound() {
             // given
-            when(ingredientRepository.findById(1L)).thenReturn(Optional.of(createIngredient));
+            when(ingredientRepository.findById(testId)).thenReturn(Optional.of(createIngredient));
 
             // when
-            IngredientResponseDTO result = ingredientService.getIngredientById(1L);
+            IngredientResponseDTO result = ingredientService.getIngredientById(testId);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.getId()).isEqualTo(1L);
+            assertThat(result.getId()).isEqualTo(testId);
             assertThat(result.getName()).isEqualTo("Chicken Breast");
         }
 
@@ -145,12 +150,14 @@ class IngredientServiceTest {
         @DisplayName("should throw exception when not found")
         void shouldThrowExceptionWhenNotFound() {
             // given
-            when(ingredientRepository.findById(999L)).thenReturn(Optional.empty());
+            UUID nonExistentId = UUID.fromString("99999999-9999-9999-9999-999999999999");
+            when(ingredientRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             // when/then
-            assertThatThrownBy(() -> ingredientService.getIngredientById(999L))
-                    .isInstanceOf(IngredientNotFoundException.class)
-                    .hasMessageContaining("999");
+            assertThatThrownBy(() -> ingredientService.getIngredientById(nonExistentId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .extracting("resourceId")
+                    .isEqualTo(nonExistentId);
         }
     }
 
@@ -195,11 +202,11 @@ class IngredientServiceTest {
         @DisplayName("should update ingredient successfully")
         void shouldUpdateIngredientSuccessfully() {
             // given
-            when(ingredientRepository.findById(1L)).thenReturn(Optional.of(createIngredient));
+            when(ingredientRepository.findById(testId)).thenReturn(Optional.of(createIngredient));
             when(ingredientRepository.save(any(Ingredient.class))).thenReturn(createIngredient);
 
             // when
-            IngredientResponseDTO result = ingredientService.updateIngredient(1L, createRequestDTO);
+            IngredientResponseDTO result = ingredientService.updateIngredient(testId, createRequestDTO);
 
             // then
             assertThat(result).isNotNull();
@@ -210,11 +217,14 @@ class IngredientServiceTest {
         @DisplayName("should throw exception when updating non-existent ingredient")
         void shouldThrowExceptionWhenUpdatingNonExistentIngredient() {
             // given
-            when(ingredientRepository.findById(999L)).thenReturn(Optional.empty());
+            UUID nonExistentId = UUID.fromString("99999999-9999-9999-9999-999999999999");
+            when(ingredientRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             // when/then
-            assertThatThrownBy(() -> ingredientService.updateIngredient(999L, createRequestDTO))
-                    .isInstanceOf(IngredientNotFoundException.class);
+            assertThatThrownBy(() -> ingredientService.updateIngredient(nonExistentId, createRequestDTO))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .extracting("resourceId")
+                    .isEqualTo(nonExistentId);
         }
     }
 
@@ -226,24 +236,27 @@ class IngredientServiceTest {
         @DisplayName("should delete ingredient successfully")
         void shouldDeleteIngredientSuccessfully() {
             // given
-            when(ingredientRepository.existsById(1L)).thenReturn(true);
+            when(ingredientRepository.existsById(testId)).thenReturn(true);
 
             // when
-            ingredientService.deleteIngredient(1L);
+            ingredientService.deleteIngredient(testId);
 
             // then
-            verify(ingredientRepository).deleteById(1L);
+            verify(ingredientRepository).deleteById(testId);
         }
 
         @Test
         @DisplayName("should throw exception when deleting non-existent ingredient")
         void shouldThrowExceptionWhenDeletingNonExistentIngredient() {
             // given
-            when(ingredientRepository.existsById(999L)).thenReturn(false);
+            UUID nonExistentId = UUID.fromString("99999999-9999-9999-9999-999999999999");
+            when(ingredientRepository.existsById(nonExistentId)).thenReturn(false);
 
             // when/then
-            assertThatThrownBy(() -> ingredientService.deleteIngredient(999L))
-                    .isInstanceOf(IngredientNotFoundException.class);
+            assertThatThrownBy(() -> ingredientService.deleteIngredient(nonExistentId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .extracting("resourceId")
+                    .isEqualTo(nonExistentId);
         }
     }
 

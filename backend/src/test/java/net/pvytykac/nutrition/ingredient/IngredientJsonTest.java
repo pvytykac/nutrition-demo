@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,6 +88,7 @@ class IngredientJsonTest {
         @DisplayName("should serialize response DTO correctly")
         void shouldSerializeResponseDTO() throws Exception {
             // given
+            UUID testId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
             NutritionDetailsResponseDTO nutritionDetails = NutritionDetailsResponseDTO.builder()
                     .fat(new BigDecimal("10.5"))
                     .carbs(new BigDecimal("20.0"))
@@ -96,7 +98,7 @@ class IngredientJsonTest {
                     .build();
 
             IngredientResponseDTO response = IngredientResponseDTO.builder()
-                    .id(1L)
+                    .id(testId)
                     .name("Chicken Breast")
                     .nutritionDetails(nutritionDetails)
                     .build();
@@ -105,7 +107,7 @@ class IngredientJsonTest {
             String json = objectMapper.writeValueAsString(response);
 
             // then
-            assertThat(json).contains("\"id\":1");
+            assertThat(json).contains("\"id\":\"550e8400-e29b-41d4-a716-446655440000\"");
             assertThat(json).contains("\"name\":\"Chicken Breast\"");
             assertThat(json).contains("\"fat\":10.5");
             assertThat(json).contains("\"carbs\":20.0");
@@ -120,7 +122,7 @@ class IngredientJsonTest {
             // given
             String json = """
                     {
-                        "id": 42,
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
                         "name": "Orange Juice",
                         "nutritionDetails": {
                             "fat": 0.2,
@@ -136,7 +138,7 @@ class IngredientJsonTest {
             IngredientResponseDTO response = objectMapper.readValue(json, IngredientResponseDTO.class);
 
             // then
-            assertThat(response.getId()).isEqualTo(42);
+            assertThat(response.getId()).isEqualTo(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
             assertThat(response.getName()).isEqualTo("Orange Juice");
             assertThat(response.getNutritionDetails()).isNotNull();
             assertThat(response.getNutritionDetails().getFat()).isEqualByComparingTo(new BigDecimal("0.2"));
