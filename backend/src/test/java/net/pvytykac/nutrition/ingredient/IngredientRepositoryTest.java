@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,67 +48,6 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         assertThat(saved.getNutritionDetails().getProtein()).isEqualByComparingTo(new BigDecimal("15.0"));
         assertThat(saved.getNutritionDetails().getPhenylalanine()).isEqualByComparingTo(new BigDecimal("5.0"));
         assertThat(saved.getNutritionDetails().getUnit()).isEqualTo("100g");
-    }
-
-    @Test
-    @DisplayName("should find ingredient by name")
-    void shouldFindIngredientByName() {
-        // given
-        NutritionDetails nutritionDetails = NutritionDetails.builder()
-                .fat(new BigDecimal("5.0"))
-                .carbs(new BigDecimal("10.0"))
-                .protein(new BigDecimal("8.0"))
-                .phenylalanine(new BigDecimal("2.0"))
-                .unit("100ml")
-                .build();
-
-        Ingredient ingredient = Ingredient.builder()
-                .name("Apple Juice")
-                .nutritionDetails(nutritionDetails)
-                .build();
-
-        testEntityManager.persistFlushFind(ingredient);
-
-        // when
-        Optional<Ingredient> result = ingredientRepository.findByName("Apple Juice");
-
-        // then
-        assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo("Apple Juice");
-    }
-
-    @Test
-    @DisplayName("should return empty when finding non-existent name")
-    void shouldReturnEmptyWhenFindingNonExistentName() {
-        // when
-        Optional<Ingredient> result = ingredientRepository.findByName("NonExistent");
-
-        // then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("should check if ingredient exists by name")
-    void shouldCheckIfIngredientExistsByName() {
-        // given
-        NutritionDetails nutritionDetails = NutritionDetails.builder()
-                .fat(new BigDecimal("1.0"))
-                .carbs(new BigDecimal("2.0"))
-                .protein(new BigDecimal("3.0"))
-                .phenylalanine(new BigDecimal("0.5"))
-                .unit("1g")
-                .build();
-
-        Ingredient ingredient = Ingredient.builder()
-                .name("Salt")
-                .nutritionDetails(nutritionDetails)
-                .build();
-
-        testEntityManager.persistFlushFind(ingredient);
-
-        // when / then
-        assertThat(ingredientRepository.existsByName("Salt")).isTrue();
-        assertThat(ingredientRepository.existsByName("NonExistent")).isFalse();
     }
 
     @Test
