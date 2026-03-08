@@ -1,5 +1,4 @@
 .opencode
-AGENTS.md
 backend/target
 backend/.idea
 *.classpath
