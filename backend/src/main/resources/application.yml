@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/nutrition_demo
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5432/nutrition_demo?currentSchema=nutrition
+    username: nutrition
+    password: nutrition
     driver-class-name: org.postgresql.Driver
   data:
     web:
@@ -23,6 +23,11 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8000/realms/nutrition
 
 server:
   port: 8080
@@ -34,3 +39,9 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    oauth:
+      client-id: ui
+      use-pkce-with-authorization-code-grant: true
+
+cors:
+  allowed-origins: http://localhost:9000,http://localhost:8080

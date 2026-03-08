@@ -1,0 +1,280 @@
+{
+  "id": "nutrition",
+  "realm": "nutrition",
+  "enabled": true,
+  "displayName": "Nutrition",
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": false,
+  "roles": {
+    "realm": [
+      {
+        "id": "admin-role-id",
+        "name": "admin",
+        "description": "Internal user who can manage global resources like ingredients and nutrition details",
+        "scopeParamRequired": false,
+        "composite": false,
+        "clientRole": false,
+        "containerId": "nutrition"
+      },
+      {
+        "id": "user-role-id",
+        "name": "user",
+        "description": "Regular user who can manage their own recipes and listing through ingredients created by admin users",
+        "scopeParamRequired": false,
+        "composite": false,
+        "clientRole": false,
+        "containerId": "nutrition"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "id": "api-client-id",
+      "clientId": "api",
+      "name": "API Client",
+      "description": "Used for machine to machine authentication via client credentials",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "pA$$w0rd",
+      "redirectUris": [],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "client.secret.creation.time": "1704067200",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "ui-client-id",
+      "clientId": "ui",
+      "name": "UI Client",
+      "description": "Client used in Swagger UI and frontend application",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "pA$$w0rd",
+      "redirectUris": [
+        "http://localhost:8080/swagger-ui/*",
+        "http://localhost:9000/*",
+        "http://localhost:8080/*",
+        "http://localhost:9000"
+      ],
+      "webOrigins": [
+        "http://localhost:8080",
+        "http://localhost:9000",
+        "+"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "pkce.code.challenge.method": "S256"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "service-account-api",
+      "username": "service-account-api",
+      "emailVerified": false,
+      "createdTimestamp": 1704067200000,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "api",
+      "credentials": [],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "admin",
+        "user"
+      ],
+      "notBefore": 0,
+      "groups": []
+    }
+  ],
+  "clientScopes": [
+    {
+      "id": "roles",
+      "name": "roles",
+      "description": "OpenID Connect scope for add user roles to the access token",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "${rolesScopeConsentText}"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "client roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "resource_access.${client_id}.roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "defaultRole": {
+    "id": "user-role-id",
+    "name": "user",
+    "description": "Regular user who can manage their own recipes and listing through ingredients created by admin users",
+    "scopeParamRequired": false,
+    "composite": false,
+    "clientRole": false,
+    "containerId": "nutrition"
+  },
+  "defaultDefaultClientScopes": [
+    "web-origins",
+    "acr",
+    "roles",
+    "profile",
+    "email"
+  ],
+  "browserFlow": "browser",
+  "registrationFlow": "registration",
+  "directGrantFlow": "direct grant",
+  "resetCredentialsFlow": "reset credentials",
+  "clientAuthenticationFlow": "clients",
+  "dockerAuthenticationFlow": "docker auth",
+  "attributes": {
+    "realm": "nutrition"
+  },
+  "keycloakVersion": "26.0.0"
+}

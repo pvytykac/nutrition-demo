@@ -24,7 +24,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
                         .put("kilocalories", 50.0));
 
         // when - POST
-        var postResponse = webTestClient.post()
+        var postResponse = withAdminAuth().post()
                 .uri("/v1/ingredients")
                 .header("Content-Type", "application/json")
                 .bodyValue(postRequest.toString())
@@ -37,7 +37,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         String baseUrl = "/v1/ingredients/" + id;
 
         // when - GET all
-        var getAllResponse = webTestClient.get()
+        var getAllResponse = withAdminAuth().get()
                 .uri("/v1/ingredients")
                 .exchange();
 
@@ -60,7 +60,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
                         .put("kilocalories", 100.0));
 
         // when - PUT using baseUrl from POST
-        var putResponse = webTestClient.put()
+        var putResponse = withAdminAuth().put()
                 .uri(baseUrl)
                 .header("Content-Type", "application/json")
                 .bodyValue(putRequest.toString())
@@ -70,7 +70,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         putResponse.expectStatus().isOk();
 
         // when - GET /id using baseUrl from POST
-        var getByIdResponse = webTestClient.get()
+        var getByIdResponse = withAdminAuth().get()
                 .uri(baseUrl)
                 .exchange();
 
@@ -82,7 +82,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
                 .jsonPath("$.unit").isEqualTo("MILILITER");
 
         // when - DELETE
-        var deleteResponse = webTestClient.delete()
+        var deleteResponse = withAdminAuth().delete()
                 .uri(baseUrl)
                 .exchange();
 
@@ -90,7 +90,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         deleteResponse.expectStatus().isNoContent();
 
         // when - GET /id after delete should return 404
-        var getAfterDelete = webTestClient.get()
+        var getAfterDelete = withAdminAuth().get()
                 .uri(baseUrl)
                 .exchange();
 

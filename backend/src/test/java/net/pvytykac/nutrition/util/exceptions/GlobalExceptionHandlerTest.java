@@ -12,16 +12,16 @@ import static org.hamcrest.Matchers.containsString;
 @WebMvcTest(controllers = {GlobalExceptionHandler.class, TestExceptionController.class})
 @DisplayName("GlobalExceptionHandler")
 class GlobalExceptionHandlerTest extends ControllerTestBase {
-    
+
     @Nested
     @DisplayName("ResourceNotFoundException handling")
     class ResourceNotFoundExceptionTests {
-        
+
         @Test
         @DisplayName("should return 404 with correct ProblemDetail structure")
         void shouldReturn404WithProblemDetail() {
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Recipe&id=123")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -38,7 +38,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should handle Ingredient resource type")
         void shouldHandleIngredientResourceType() {
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Ingredient&id=999")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -53,7 +53,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should handle Meal resource type")
         void shouldHandleMealResourceType() {
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Meal&id=42")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -68,7 +68,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should include instance URI in response")
         void shouldIncludeInstanceUri() {
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/test-exceptions/resource-not-found?resourceType=User&id=abc123")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -92,7 +92,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -115,7 +115,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -135,7 +135,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -155,7 +155,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -173,7 +173,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(validRequest)
@@ -192,7 +192,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should return 409 Conflict for DataIntegrityViolationException")
         void shouldReturn409ForDataIntegrityViolationException() {
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/test-exceptions/data-integrity-violation-exception")
                     .exchange()
                     .expectStatus().isEqualTo(409)
