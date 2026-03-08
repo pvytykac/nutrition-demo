@@ -16,8 +16,8 @@ The visibility of classes is package private by default, only the classes that a
 Global beans, shared helpers and generic reusable classes are all nested under the `net.pvytykac.nutrition.common` package.
 
 ## Technology Stack
-- Java 17
-- Spring Boot 3
+- Java 25
+- Spring Boot 4
 - JPA + Hibernate
 - PostgreSQL 18
 - Liquibase for database migrations

@@ -79,7 +79,7 @@ class EnumFilterTest {
         void shouldReturnTrueWithMultipleValues() {
             // given
             EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILILITER));
+            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
 
             // then
             assertThat(filter.isActive()).isTrue();

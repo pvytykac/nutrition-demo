@@ -320,7 +320,7 @@ class SpecificationBuilderTest {
         void shouldCreateSpecForIn() {
             // given
             EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILILITER));
+            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
             filter.setOperator(EnumFilter.Operator.IN);
 
             // when
@@ -338,7 +338,7 @@ class SpecificationBuilderTest {
         void shouldCreateSpecForNotIn() {
             // given
             EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.MILILITER));
+            filter.setValue(List.of(Unit.MILLILITER));
             filter.setOperator(EnumFilter.Operator.NOT_IN);
 
             // when
@@ -374,7 +374,7 @@ class SpecificationBuilderTest {
         void shouldHandleMultipleValues() {
             // given
             EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILILITER));
+            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
             filter.setOperator(EnumFilter.Operator.IN);
 
             // when

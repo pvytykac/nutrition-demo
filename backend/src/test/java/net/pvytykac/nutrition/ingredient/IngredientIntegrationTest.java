@@ -51,7 +51,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         JSONObject putRequest = new JSONObject()
                 .put("name", "Updated Ingredient")
                 .put("quantity", 200.0)
-                .put("unit", "MILILITER")
+                .put("unit", "MILLILITER")
                 .put("nutritionDetails", new JSONObject()
                         .put("fatContent", 5.0)
                         .put("carbsContent", 10.0)
@@ -79,7 +79,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         getByIdResponse.expectBody()
                 .jsonPath("$.name").isEqualTo("Updated Ingredient")
                 .jsonPath("$.quantity").isEqualTo(200.0)
-                .jsonPath("$.unit").isEqualTo("MILILITER");
+                .jsonPath("$.unit").isEqualTo("MILLILITER");
 
         // when - DELETE
         var deleteResponse = withAdminAuth().delete()

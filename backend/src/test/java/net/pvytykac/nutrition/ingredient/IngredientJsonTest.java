@@ -164,7 +164,7 @@ class IngredientJsonTest {
                 "\"id\": \"550e8400-e29b-41d4-a716-446655440000\"," +
                 "\"name\": \"Orange Juice\"," +
                 "\"quantity\": 100.0," +
-                "\"unit\": \"MILILITER\"," +
+                "\"unit\": \"MILLILITER\"," +
                 "\"nutritionDetails\": {" +
                 "\"fatContent\": 0.2," +
                 "\"carbsContent\": 30.0," +
@@ -193,7 +193,7 @@ class IngredientJsonTest {
             assertThat(response.getId()).isEqualTo(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
             assertThat(response.getName()).isEqualTo("Orange Juice");
             assertThat(response.getQuantity()).isEqualByComparingTo(new BigDecimal("100.0"));
-            assertThat(response.getUnit()).isEqualTo(Unit.MILILITER);
+            assertThat(response.getUnit()).isEqualTo(Unit.MILLILITER);
             assertThat(response.getNutritionDetails()).isNotNull();
             assertThat(response.getNutritionDetails().getFatContent()).isEqualByComparingTo(new BigDecimal("0.2"));
             assertThat(response.getNutritionDetails().getCarbsContent()).isEqualByComparingTo(new BigDecimal("30.0"));

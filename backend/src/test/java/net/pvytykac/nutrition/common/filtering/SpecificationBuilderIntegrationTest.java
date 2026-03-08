@@ -376,7 +376,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
             // given
             saveTestIngredient("Apple", new BigDecimal("100"), Unit.GRAM,
                     new BigDecimal("1.0"), new BigDecimal("10.0"), new BigDecimal("5.0"), new BigDecimal("10.0"));
-            saveTestIngredient("Water", new BigDecimal("100"), Unit.MILILITER,
+            saveTestIngredient("Water", new BigDecimal("100"), Unit.MILLILITER,
                     new BigDecimal("0.0"), new BigDecimal("0.0"), new BigDecimal("0.0"), new BigDecimal("0.0"));
 
             EnumFilter<Unit> filter = new EnumFilter<>();
@@ -402,7 +402,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
             // given
             saveTestIngredient("Apple", new BigDecimal("100"), Unit.GRAM,
                     new BigDecimal("1.0"), new BigDecimal("10.0"), new BigDecimal("5.0"), new BigDecimal("10.0"));
-            saveTestIngredient("Water", new BigDecimal("100"), Unit.MILILITER,
+            saveTestIngredient("Water", new BigDecimal("100"), Unit.MILLILITER,
                     new BigDecimal("0.0"), new BigDecimal("0.0"), new BigDecimal("0.0"), new BigDecimal("0.0"));
 
             EnumFilter<Unit> filter = new EnumFilter<>();
@@ -419,7 +419,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             // then
             assertThat(result).hasSize(1);
-            assertThat(result.getFirst().getUnit()).isEqualTo(Unit.MILILITER);
+            assertThat(result.getFirst().getUnit()).isEqualTo(Unit.MILLILITER);
         }
     }
 }
