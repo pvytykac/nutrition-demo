@@ -1,5 +1,6 @@
 package net.pvytykac.nutrition.util.exceptions;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/test-exceptions")
+@PermitAll
 public class TestExceptionController {
 
     @GetMapping("/resource-not-found")

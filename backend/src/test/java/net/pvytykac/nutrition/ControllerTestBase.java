@@ -1,7 +1,7 @@
 package net.pvytykac.nutrition;
 
-import net.pvytykac.nutrition.config.SecurityConfig;
-import net.pvytykac.nutrition.config.TestJwtDecoderConfig;
+import net.pvytykac.nutrition.util.security.SecurityConfig;
+import net.pvytykac.nutrition.util.security.TestJwtDecoderConfig;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
