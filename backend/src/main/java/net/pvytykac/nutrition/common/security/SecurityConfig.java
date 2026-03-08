@@ -21,8 +21,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
@@ -59,24 +60,23 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("unchecked")
     public Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter() {
         JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
-        
+
         return jwt -> {
             Collection<GrantedAuthority> authorities = defaultConverter.convert(jwt);
-            
-            Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
-            if (realmAccess != null && realmAccess.containsKey("roles")) {
-                @SuppressWarnings("unchecked")
-                List<String> roles = (List<String>) realmAccess.get("roles");
-                List<SimpleGrantedAuthority> realmRoles = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .toList();
-                
-                authorities = Stream.concat(authorities.stream(), realmRoles.stream())
-                    .collect(Collectors.toList());
-            }
-            
+
+            List<String> roles = Optional.ofNullable(jwt.getClaimAsMap("realm_access"))
+                    .map(realmAccess -> (List<String>) realmAccess.get("roles"))
+                    .orElse(Collections.emptyList());
+            List<SimpleGrantedAuthority> realmRoles = roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .toList();
+
+            authorities = Stream.concat(authorities.stream(), realmRoles.stream())
+                .collect(Collectors.toList());
+
             return authorities;
         };
     }
