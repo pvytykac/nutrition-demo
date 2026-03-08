@@ -30,3 +30,7 @@ server:
 logging:
   level:
     net.pvytykac.nutrition: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

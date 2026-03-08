@@ -1,10 +1,13 @@
 package net.pvytykac.nutrition.ingredient;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.pvytykac.nutrition.util.filtering.NumberOperator;
 import net.pvytykac.nutrition.util.filtering.StringOperator;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,11 +29,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/ingredients")
 @RequiredArgsConstructor
+@Tag(name = "Ingredients", description = "Ingredient management API")
 public class IngredientController {
 
     private final IngredientService ingredientService;
 
     @PostMapping
+    @Operation(summary = "Create a new ingredient")
     public ResponseEntity<IngredientResponseDTO> createIngredient(@Valid @RequestBody IngredientRequestDTO request) {
         log.info("POST /v1/ingredients - Creating ingredient: {}", request.getName());
         IngredientResponseDTO created = ingredientService.createIngredient(request);
@@ -38,6 +43,7 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get an ingredient by ID")
     public ResponseEntity<IngredientResponseDTO> getIngredient(@PathVariable UUID id) {
         log.debug("GET /v1/ingredients/{} - Fetching ingredient", id);
         IngredientResponseDTO ingredient = ingredientService.getIngredientById(id);
@@ -45,13 +51,14 @@ public class IngredientController {
     }
 
     @GetMapping
+    @Operation(summary = "Search ingredients with filtering and pagination")
     public ResponseEntity<Page<IngredientResponseDTO>> getAllIngredients(
             @RequestParam(required = false) String nameValue,
             @RequestParam(required = false) String nameOperator,
             @RequestParam(required = false) BigDecimal phenylalanineValue,
             @RequestParam(required = false) BigDecimal phenylalanineSecondValue,
             @RequestParam(required = false) String phenylalanineOperator,
-            Pageable pageable) {
+            @ParameterObject Pageable pageable) {
         
         log.debug("GET /v1/ingredients - Fetching ingredients with filters and paging");
         
@@ -70,6 +77,7 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing ingredient")
     public ResponseEntity<IngredientResponseDTO> updateIngredient(
             @PathVariable UUID id,
             @Valid @RequestBody IngredientRequestDTO request) {
@@ -79,6 +87,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an ingredient")
     public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
         log.info("DELETE /v1/ingredients/{} - Deleting ingredient", id);
         ingredientService.deleteIngredient(id);

@@ -1,5 +1,6 @@
 package net.pvytykac.nutrition.ingredient;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,16 +21,20 @@ import java.math.BigDecimal;
 public class IngredientRequestDTO {
 
     @NotBlank
+    @Schema(description = "Name of the ingredient")
     private String name;
 
     @NotNull
     @Positive
+    @Schema(description = "Quantity of the ingredient", example = "100")
     private BigDecimal quantity;
 
     @NotNull
+    @Schema(description = "Unit of measurement")
     private Unit unit;
 
     @NotNull
     @Valid
+    @Schema(description = "Nutritional information")
     private NutritionDetailsRequestDTO nutritionDetails;
 }
