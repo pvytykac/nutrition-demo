@@ -4,6 +4,7 @@ import net.pvytykac.nutrition.RepositoryTestBase;
 import net.pvytykac.nutrition.ingredient.Ingredient;
 import net.pvytykac.nutrition.ingredient.NutritionDetails;
 import net.pvytykac.nutrition.ingredient.Unit;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,11 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
     @Autowired
     private net.pvytykac.nutrition.ingredient.IngredientRepository ingredientRepository;
+
+    @BeforeEach
+    void setUp() {
+        ingredientRepository.deleteAll();
+    }
 
     private void saveTestIngredient(String name, BigDecimal quantity, Unit unit, 
                                      BigDecimal fat, BigDecimal carbs, BigDecimal protein, 
