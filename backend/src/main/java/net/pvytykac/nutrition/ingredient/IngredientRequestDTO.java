@@ -19,17 +19,17 @@ import java.math.BigDecimal;
 @Builder
 public class IngredientRequestDTO {
 
-    @NotBlank(message = "Name is required")
+    @NotBlank
     private String name;
 
-    @NotNull(message = "Quantity is required")
-    @Positive(message = "Quantity must be positive")
+    @NotNull
+    @Positive
     private BigDecimal quantity;
 
-    @NotNull(message = "Unit is required")
+    @NotNull
     private Unit unit;
 
-    @NotNull(message = "Nutrition details are required")
+    @NotNull
     @Valid
     private NutritionDetailsRequestDTO nutritionDetails;
 }
