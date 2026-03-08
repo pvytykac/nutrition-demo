@@ -91,8 +91,8 @@ public final class SpecificationBuilder {
      * @param <E> the enum type
      * @return Specification or null if filter is not active
      */
-    public static <T, E extends Enum<E>> Specification<T> enumFilter(
-            EnumFilter<E> filter,
+    public static <T, E extends Enum<E>, F extends EnumFilter<E>> Specification<T> enumFilter(
+            F filter,
             FieldExpression<T, E> fieldExpression) {
 
         if (!filter.isActive()) {
