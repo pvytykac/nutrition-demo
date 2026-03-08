@@ -179,13 +179,20 @@ class IngredientControllerTest extends ControllerTestBase {
         }
 
         @Test
-        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
-        void shouldReturn403WhenUserRole() {
+        @DisplayName("should return 200 OK when user has role 'user'")
+        void shouldReturn200WhenUserRole() {
+            // given
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
+            when(ingredientService.getIngredientById(TEST_ID)).thenReturn(response);
+
             // when/then
             withUserAuth().get()
                     .uri("/v1/ingredients/{id}", TEST_ID)
                     .exchange()
-                    .expectStatus().isForbidden();
+                    .expectStatus().isOk()
+                    .expectBody()
+                    .jsonPath("$.id").isEqualTo(TEST_ID.toString())
+                    .jsonPath("$.name").isEqualTo("Chicken Breast");
         }
     }
 
@@ -331,13 +338,24 @@ class IngredientControllerTest extends ControllerTestBase {
         }
 
         @Test
-        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
-        void shouldReturn403WhenUserRole() {
+        @DisplayName("should return 200 OK when user has role 'user'")
+        void shouldReturn200WhenUserRole() {
+            // given
+            IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
+            PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(response), PageRequest.of(0, 20), 1);
+            when(ingredientService.searchIngredients(any(IngredientFilter.class), any(Pageable.class)))
+                    .thenReturn(page);
+
             // when/then
             withUserAuth().get()
                     .uri("/v1/ingredients")
                     .exchange()
-                    .expectStatus().isForbidden();
+                    .expectStatus().isOk()
+                    .expectBody()
+                    .jsonPath("$.content").isArray()
+                    .jsonPath("$.content[0].name").isEqualTo("Chicken Breast")
+                    .jsonPath("$.page.size").isEqualTo(20)
+                    .jsonPath("$.page.number").isEqualTo(0);
         }
     }
 

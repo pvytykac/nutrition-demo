@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.pvytykac.nutrition.common.security.HasAdminRole;
+import net.pvytykac.nutrition.common.security.HasUserOrAdminRole;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,12 +28,12 @@ import java.util.UUID;
 @RequestMapping("/v1/ingredients")
 @RequiredArgsConstructor
 @Tag(name = "Ingredients", description = "Ingredient management API")
-@HasAdminRole
 public class IngredientController {
 
     private final IngredientService ingredientService;
 
     @PostMapping
+    @HasAdminRole
     @Operation(summary = "Create a new ingredient")
     public ResponseEntity<IngredientResponseDTO> createIngredient(@Valid @RequestBody IngredientRequestDTO request) {
         log.info("POST /v1/ingredients - Creating ingredient: {}", request.getName());
@@ -41,6 +42,7 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
+    @HasUserOrAdminRole
     @Operation(summary = "Get an ingredient by ID")
     public ResponseEntity<IngredientResponseDTO> getIngredient(@PathVariable UUID id) {
         log.debug("GET /v1/ingredients/{} - Fetching ingredient", id);
@@ -49,6 +51,7 @@ public class IngredientController {
     }
 
     @GetMapping
+    @HasUserOrAdminRole
     @Operation(summary = "Search ingredients with filtering and pagination")
     public ResponseEntity<Page<IngredientResponseDTO>> getAllIngredients(
             @ParameterObject IngredientsQueryParameters queryParameters,
@@ -71,6 +74,7 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
+    @HasAdminRole
     @Operation(summary = "Update an existing ingredient")
     public ResponseEntity<IngredientResponseDTO> updateIngredient(
             @PathVariable UUID id,
@@ -81,6 +85,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
+    @HasAdminRole
     @Operation(summary = "Delete an ingredient")
     public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
         log.info("DELETE /v1/ingredients/{} - Deleting ingredient", id);
