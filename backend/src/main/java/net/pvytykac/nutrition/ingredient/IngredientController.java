@@ -56,6 +56,7 @@ public class IngredientController {
         
         var filter = IngredientFilter.builder()
             .nameFilter(queryParameters.getName())
+            .unitFilter(queryParameters.getUnit())
             .fatContentFilter(queryParameters.getFatContent())
             .proteinContentFilter(queryParameters.getProteinContent())
             .carbsContentFilter(queryParameters.getCarbsContent())

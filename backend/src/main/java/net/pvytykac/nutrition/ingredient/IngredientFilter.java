@@ -3,6 +3,7 @@ package net.pvytykac.nutrition.ingredient;
 import jakarta.persistence.criteria.Root;
 import lombok.Builder;
 import lombok.Getter;
+import net.pvytykac.nutrition.util.filtering.EnumFilter;
 import net.pvytykac.nutrition.util.filtering.NumericFilter;
 import net.pvytykac.nutrition.util.filtering.SpecificationBuilder;
 import net.pvytykac.nutrition.util.filtering.StringFilter;
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class IngredientFilter {
 
     private final StringFilter nameFilter;
+    private final EnumFilter<Unit> unitFilter;
     private final NumericFilter fatContentFilter;
     private final NumericFilter proteinContentFilter;
     private final NumericFilter carbsContentFilter;
@@ -33,6 +35,7 @@ public class IngredientFilter {
     public Specification<Ingredient> toSpecification() {
         return SpecificationBuilder.combine(
                 nameSpecification(),
+                unitSpecification(),
                 fatContentSpecification(),
                 proteinContentSpecification(),
                 carbsContentSpecification(),
@@ -47,6 +50,16 @@ public class IngredientFilter {
         return SpecificationBuilder.stringFilter(
                 nameFilter,
                 (Root<Ingredient> root) -> root.get(Ingredient_.NAME)
+        );
+    }
+
+    private Specification<Ingredient> unitSpecification() {
+        if (!isUnitFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.enumFilter(
+                unitFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.UNIT)
         );
     }
 
@@ -92,6 +105,10 @@ public class IngredientFilter {
 
     public boolean isNameFilterActive() {
         return nameFilter != null && nameFilter.isActive();
+    }
+
+    public boolean isUnitFilterActive() {
+        return unitFilter != null && unitFilter.isActive();
     }
 
     public boolean isFatContentFilterActive() {
