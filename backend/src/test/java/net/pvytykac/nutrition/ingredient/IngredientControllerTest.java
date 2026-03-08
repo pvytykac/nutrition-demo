@@ -2,8 +2,6 @@ package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.ControllerTestBase;
 import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -175,8 +173,7 @@ class IngredientControllerTest extends ControllerTestBase {
             // given
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(response), PageRequest.of(0, 20), 1);
-            when(ingredientService.searchIngredients(
-                    eq(null), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)))
+            when(ingredientService.searchIngredients(any(IngredientFilter.class), any(Pageable.class)))
                     .thenReturn(page);
 
             // when/then
@@ -198,16 +195,14 @@ class IngredientControllerTest extends ControllerTestBase {
         void shouldReturn200WithFilteredResults() {
             // given
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of());
-            when(ingredientService.searchIngredients(
-                    eq("chicken"), eq(StringOperator.CONTAINS), 
-                    eq(null), eq(null), eq(null), any(Pageable.class)))
+            when(ingredientService.searchIngredients(any(IngredientFilter.class), any(Pageable.class)))
                     .thenReturn(page);
 
             // when/then
             webTestClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/v1/ingredients")
-                            .queryParam("nameValue", "chicken")
-                            .queryParam("nameOperator", "CONTAINS")
+                            .queryParam("name.value", "chicken")
+                            .queryParam("name.operator", "CONTAINS")
                             .build())
                     .exchange()
                     .expectStatus().isOk()
@@ -221,17 +216,14 @@ class IngredientControllerTest extends ControllerTestBase {
             // given
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(), 
                     PageRequest.of(0, 10), 0);
-            when(ingredientService.searchIngredients(
-                    eq(null), eq(null), 
-                    eq(new BigDecimal("5")), eq(null), eq(NumberOperator.GREATER_THAN), 
-                    any(Pageable.class)))
+            when(ingredientService.searchIngredients(any(IngredientFilter.class), any(Pageable.class)))
                     .thenReturn(page);
 
             // when/then
             webTestClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/v1/ingredients")
-                            .queryParam("phenylalanineValue", "5")
-                            .queryParam("phenylalanineOperator", "GREATER_THAN")
+                            .queryParam("phenylalanineContent.value", "5")
+                            .queryParam("phenylalanineContent.operator", "GREATER_THAN")
                             .queryParam("page", "0")
                             .queryParam("size", "10")
                             .build())

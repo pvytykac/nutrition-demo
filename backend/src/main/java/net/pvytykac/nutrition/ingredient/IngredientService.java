@@ -3,15 +3,12 @@ package net.pvytykac.nutrition.ingredient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,31 +56,11 @@ class IngredientService {
                 .toList();
     }
 
-    public Page<IngredientResponseDTO> searchIngredients(
-            String nameValue, 
-            StringOperator nameOperator,
-            BigDecimal phenylalanineValue, 
-            BigDecimal phenylalanineSecondValue,
-            NumberOperator phenylalanineOperator,
-            Pageable pageable) {
+    public Page<IngredientResponseDTO> searchIngredients(IngredientFilter filter, Pageable pageable) {
         
-        log.debug("Searching ingredients with filters - name: {}, phenylalanine: {}", nameValue, phenylalanineValue);
+        log.debug("Searching ingredients with filters");
         
-        List<Specification<Ingredient>> specs = new java.util.ArrayList<>();
-        
-        if (nameValue != null && !nameValue.isBlank()) {
-            StringOperator op = nameOperator != null ? nameOperator : StringOperator.CONTAINS;
-            specs.add(IngredientFilter.nameContains(nameValue, op));
-        }
-        
-        if (phenylalanineValue != null) {
-            NumberOperator op = phenylalanineOperator != null ? phenylalanineOperator : NumberOperator.EQUALS;
-            specs.add(IngredientFilter.phenylalanineFilter(phenylalanineValue, phenylalanineSecondValue, op));
-        }
-        
-        Specification<Ingredient> spec = specs.isEmpty() 
-                ? null 
-                : IngredientFilter.combine(specs);
+        Specification<Ingredient> spec = filter.toSpecification();
         
         Page<Ingredient> ingredients = ingredientRepository.findAll(spec, pageable);
         log.debug("Found {} ingredients matching filters", ingredients.getTotalElements());

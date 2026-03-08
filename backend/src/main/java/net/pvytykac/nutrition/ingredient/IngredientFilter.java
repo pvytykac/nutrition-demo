@@ -1,47 +1,112 @@
 package net.pvytykac.nutrition.ingredient;
 
-import net.pvytykac.nutrition.util.filtering.FilterBuilder;
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
+import jakarta.persistence.criteria.Root;
+import lombok.Builder;
+import lombok.Getter;
+import net.pvytykac.nutrition.util.filtering.NumericFilter;
+import net.pvytykac.nutrition.util.filtering.SpecificationBuilder;
+import net.pvytykac.nutrition.util.filtering.StringFilter;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 /**
- * Filter specifications for Ingredient entity.
+ * Container class for ingredient filtering criteria.
+ * Knows which filters apply to the Ingredient entity and provides
+ * field expressions for the SpecificationBuilder to build specifications.
  */
-public final class IngredientFilter {
+@Getter
+@Builder
+public class IngredientFilter {
 
-    private IngredientFilter() {}
+    private final StringFilter nameFilter;
+    private final NumericFilter fatContentFilter;
+    private final NumericFilter proteinContentFilter;
+    private final NumericFilter carbsContentFilter;
+    private final NumericFilter phenylalanineContentFilter;
 
     /**
-     * Creates a specification that filters by the name field.
+     * Converts this filter container to a combined JPA Specification.
+     * Delegates to SpecificationBuilder with entity-specific field expressions.
+     *
+     * @return Specification that combines all active filters with AND logic,
+     *         or null if no filters are active
      */
-    public static Specification<Ingredient> nameContains(String value, StringOperator operator) {
-        return FilterBuilder.stringFilter(
-                root -> root.get("name"),
-                value,
-                operator);
+    public Specification<Ingredient> toSpecification() {
+        return SpecificationBuilder.combine(
+                nameSpecification(),
+                fatContentSpecification(),
+                proteinContentSpecification(),
+                carbsContentSpecification(),
+                phenylalanineContentSpecification()
+        );
     }
 
-    /**
-     * Creates a specification that filters by the phenylalanine field in nutrition details.
-     */
-    public static Specification<Ingredient> phenylalanineFilter(
-            BigDecimal value, BigDecimal secondValue, NumberOperator operator) {
-        
-        return FilterBuilder.comparableFilter(
-                root -> root.get("nutritionDetails").get("phenylalanineContent"),
-                value,
-                secondValue,
-                operator);
+    private Specification<Ingredient> nameSpecification() {
+        if (!isNameFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.stringFilter(
+                nameFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.NAME)
+        );
     }
 
-    /**
-     * Combines multiple specifications using AND logic.
-     */
-    public static Specification<Ingredient> combine(List<Specification<Ingredient>> specs) {
-        return FilterBuilder.combine(specs);
+    private Specification<Ingredient> fatContentSpecification() {
+        if (!isFatContentFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.numericFilter(
+                fatContentFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.NUTRITION_DETAILS).get(NutritionDetails_.FAT_CONTENT)
+        );
+    }
+
+    private Specification<Ingredient> proteinContentSpecification() {
+        if (!isProteinContentFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.numericFilter(
+                proteinContentFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.NUTRITION_DETAILS).get(NutritionDetails_.PROTEIN_CONTENT)
+        );
+    }
+
+    private Specification<Ingredient> carbsContentSpecification() {
+        if (!isCarbsContentFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.numericFilter(
+                carbsContentFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.NUTRITION_DETAILS).get(NutritionDetails_.CARBS_CONTENT)
+        );
+    }
+
+    private Specification<Ingredient> phenylalanineContentSpecification() {
+        if (!isPhenylalanineContentFilterActive()) {
+            return null;
+        }
+        return SpecificationBuilder.numericFilter(
+                phenylalanineContentFilter,
+                (Root<Ingredient> root) -> root.get(Ingredient_.NUTRITION_DETAILS).get(NutritionDetails_.PHENYLALANINE_CONTENT)
+        );
+    }
+
+    public boolean isNameFilterActive() {
+        return nameFilter != null && nameFilter.isActive();
+    }
+
+    public boolean isFatContentFilterActive() {
+        return fatContentFilter != null && fatContentFilter.isActive();
+    }
+
+    public boolean isProteinContentFilterActive() {
+        return proteinContentFilter != null && proteinContentFilter.isActive();
+    }
+
+    public boolean isCarbsContentFilterActive() {
+        return carbsContentFilter != null && carbsContentFilter.isActive();
+    }
+
+    public boolean isPhenylalanineContentFilterActive() {
+        return phenylalanineContentFilter != null && phenylalanineContentFilter.isActive();
     }
 }
