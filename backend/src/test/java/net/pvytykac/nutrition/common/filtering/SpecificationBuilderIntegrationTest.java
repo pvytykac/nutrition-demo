@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.filtering;
+package net.pvytykac.nutrition.common.filtering;
 
 import net.pvytykac.nutrition.RepositoryTestBase;
 import net.pvytykac.nutrition.ingredient.Ingredient;

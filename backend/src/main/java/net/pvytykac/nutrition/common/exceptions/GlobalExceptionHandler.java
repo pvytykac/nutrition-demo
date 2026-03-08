@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.exceptions;
+package net.pvytykac.nutrition.common.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;

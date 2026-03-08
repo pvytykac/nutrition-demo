@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.exceptions;
+package net.pvytykac.nutrition.common.exceptions;
 
 /**
  * Base class for all application-specific exceptions.

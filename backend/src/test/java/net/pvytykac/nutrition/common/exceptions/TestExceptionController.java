@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.exceptions;
+package net.pvytykac.nutrition.common.exceptions;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;

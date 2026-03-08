@@ -1,8 +1,8 @@
 package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.RepositoryTestBase;
-import net.pvytykac.nutrition.util.filtering.NumericFilter;
-import net.pvytykac.nutrition.util.filtering.StringFilter;
+import net.pvytykac.nutrition.common.filtering.NumericFilter;
+import net.pvytykac.nutrition.common.filtering.StringFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

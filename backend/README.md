@@ -13,7 +13,7 @@ We keep track of daily intake of fats, carbs and protein, including individual a
 Flat package structure nested under the root package: `net.pvytykac.nutrition`
 Each module gets its own package, all the entity, repository, service, controller and representation classes live in this one package.
 The visibility of classes is package private by default, only the classes that are required in other packages/modules are public - typically this would only be representation classes, in some circumstances service classes.
-Shared helpers and generic reusable classes are all nested under the `net.pvytykac.nutrition.util` package.
+Global beans, shared helpers and generic reusable classes are all nested under the `net.pvytykac.nutrition.common` package.
 
 ## Technology Stack
 - Java 17

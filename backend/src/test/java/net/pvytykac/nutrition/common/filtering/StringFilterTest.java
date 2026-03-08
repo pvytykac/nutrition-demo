@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.filtering;
+package net.pvytykac.nutrition.common.filtering;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,10 +1,9 @@
 package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.ControllerTestBase;
-import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
-import net.pvytykac.nutrition.util.filtering.EnumFilter;
-import net.pvytykac.nutrition.util.filtering.NumericFilter;
-import net.pvytykac.nutrition.util.filtering.StringFilter;
+import net.pvytykac.nutrition.common.exceptions.ResourceNotFoundException;
+import net.pvytykac.nutrition.common.filtering.NumericFilter;
+import net.pvytykac.nutrition.common.filtering.StringFilter;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;

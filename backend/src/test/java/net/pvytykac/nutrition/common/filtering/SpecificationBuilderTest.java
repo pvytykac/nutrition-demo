@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.filtering;
+package net.pvytykac.nutrition.common.filtering;
 
 import jakarta.persistence.criteria.Root;
 import net.pvytykac.nutrition.ingredient.Ingredient;

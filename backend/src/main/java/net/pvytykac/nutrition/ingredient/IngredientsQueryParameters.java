@@ -1,9 +1,9 @@
 package net.pvytykac.nutrition.ingredient;
 
 import lombok.Data;
-import net.pvytykac.nutrition.util.filtering.EnumFilter;
-import net.pvytykac.nutrition.util.filtering.NumericFilter;
-import net.pvytykac.nutrition.util.filtering.StringFilter;
+import net.pvytykac.nutrition.common.filtering.EnumFilter;
+import net.pvytykac.nutrition.common.filtering.NumericFilter;
+import net.pvytykac.nutrition.common.filtering.StringFilter;
 
 @Data
 public class IngredientsQueryParameters {

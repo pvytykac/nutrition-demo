@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.util.security;
+package net.pvytykac.nutrition.common.security;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

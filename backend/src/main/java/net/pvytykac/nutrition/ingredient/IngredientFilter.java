@@ -3,10 +3,10 @@ package net.pvytykac.nutrition.ingredient;
 import jakarta.persistence.criteria.Root;
 import lombok.Builder;
 import lombok.Getter;
-import net.pvytykac.nutrition.util.filtering.EnumFilter;
-import net.pvytykac.nutrition.util.filtering.NumericFilter;
-import net.pvytykac.nutrition.util.filtering.SpecificationBuilder;
-import net.pvytykac.nutrition.util.filtering.StringFilter;
+import net.pvytykac.nutrition.common.filtering.EnumFilter;
+import net.pvytykac.nutrition.common.filtering.NumericFilter;
+import net.pvytykac.nutrition.common.filtering.SpecificationBuilder;
+import net.pvytykac.nutrition.common.filtering.StringFilter;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
