@@ -2,11 +2,14 @@ package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.ControllerTestBase;
 import net.pvytykac.nutrition.util.exceptions.ResourceNotFoundException;
+import net.pvytykac.nutrition.util.filtering.NumericFilter;
+import net.pvytykac.nutrition.util.filtering.StringFilter;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +19,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -188,31 +193,42 @@ class IngredientControllerTest extends ControllerTestBase {
                     .jsonPath("$.page.number").isEqualTo(0)
                     .jsonPath("$.page.totalElements").isEqualTo(1)
                     .jsonPath("$.page.totalPages").isEqualTo(1);
+
+            // verify filter and pageable
+            ArgumentCaptor<IngredientFilter> filterCaptor = ArgumentCaptor.forClass(IngredientFilter.class);
+            ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+            verify(ingredientService).searchIngredients(filterCaptor.capture(), pageableCaptor.capture());
+            
+            IngredientFilter capturedFilter = filterCaptor.getValue();
+            // When no query params, filters are instantiated but not active (no values set)
+            assertThat(capturedFilter.getNameFilter()).satisfiesAnyOf(
+                    nameFilter -> assertThat(nameFilter).isNull(),
+                    nameFilter -> assertThat(nameFilter.isActive()).isFalse()
+            );
+            assertThat(capturedFilter.getFatContentFilter()).satisfiesAnyOf(
+                    filter -> assertThat(filter).isNull(),
+                    filter -> assertThat(filter.isActive()).isFalse()
+            );
+            assertThat(capturedFilter.getProteinContentFilter()).satisfiesAnyOf(
+                    filter -> assertThat(filter).isNull(),
+                    filter -> assertThat(filter.isActive()).isFalse()
+            );
+            assertThat(capturedFilter.getCarbsContentFilter()).satisfiesAnyOf(
+                    filter -> assertThat(filter).isNull(),
+                    filter -> assertThat(filter.isActive()).isFalse()
+            );
+            assertThat(capturedFilter.getPhenylalanineContentFilter()).satisfiesAnyOf(
+                    filter -> assertThat(filter).isNull(),
+                    filter -> assertThat(filter.isActive()).isFalse()
+            );
+            
+            Pageable capturedPageable = pageableCaptor.getValue();
+            assertThat(capturedPageable.getPageSize()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("should return 200 OK with filtered results")
-        void shouldReturn200WithFilteredResults() {
-            // given
-            PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of());
-            when(ingredientService.searchIngredients(any(IngredientFilter.class), any(Pageable.class)))
-                    .thenReturn(page);
-
-            // when/then
-            webTestClient.get()
-                    .uri(uriBuilder -> uriBuilder.path("/v1/ingredients")
-                            .queryParam("name.value", "chicken")
-                            .queryParam("name.operator", "CONTAINS")
-                            .build())
-                    .exchange()
-                    .expectStatus().isOk()
-                    .expectBody()
-                    .jsonPath("$.content").isArray();
-        }
-
-        @Test
-        @DisplayName("should return 200 OK with custom paging parameters")
-        void shouldReturn200WithPagingParameters() {
+        @DisplayName("should return 200 OK with all query parameter filters")
+        void shouldReturn200WithAllQueryParameterFilters() {
             // given
             PageImpl<IngredientResponseDTO> page = new PageImpl<>(List.of(), 
                     PageRequest.of(0, 10), 0);
@@ -222,19 +238,67 @@ class IngredientControllerTest extends ControllerTestBase {
             // when/then
             webTestClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/v1/ingredients")
-                            .queryParam("phenylalanineContent.value", "5")
-                            .queryParam("phenylalanineContent.operator", "GREATER_THAN")
                             .queryParam("page", "0")
                             .queryParam("size", "10")
+                            .queryParam("name.value", "Chicken")
+                            .queryParam("name.operator", "CONTAINS")
+                            .queryParam("fatContent.value", "10")
+                            .queryParam("fatContent.operator", "GREATER_THAN")
+                            .queryParam("proteinContent.value", "20")
+                            .queryParam("proteinContent.operator", "EQUAL")
+                            .queryParam("carbsContent.value", "5")
+                            .queryParam("carbsContent.value", "15")
+                            .queryParam("carbsContent.operator", "BETWEEN")
+                            .queryParam("phenylalanineContent.value", "100")
+                            .queryParam("phenylalanineContent.operator", "LOWER_THAN")
                             .build())
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
                     .jsonPath("$.content").isArray()
                     .jsonPath("$.page.size").isEqualTo(10)
-                    .jsonPath("$.page.number").isEqualTo(0)
-                    .jsonPath("$.page.totalElements").isEqualTo(0)
-                    .jsonPath("$.page.totalPages").isEqualTo(0);
+                    .jsonPath("$.page.number").isEqualTo(0);
+
+            // verify all filters are captured correctly
+            ArgumentCaptor<IngredientFilter> filterCaptor = ArgumentCaptor.forClass(IngredientFilter.class);
+            ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+            verify(ingredientService).searchIngredients(filterCaptor.capture(), pageableCaptor.capture());
+            
+            IngredientFilter capturedFilter = filterCaptor.getValue();
+            
+            // Verify name filter
+            assertThat(capturedFilter.getNameFilter()).isNotNull();
+            assertThat(capturedFilter.getNameFilter().isActive()).isTrue();
+            assertThat(capturedFilter.getNameFilter().getValue()).contains("Chicken");
+            assertThat(capturedFilter.getNameFilter().getOperator()).isEqualTo(StringFilter.Operator.CONTAINS);
+            
+            // Verify fat content filter
+            assertThat(capturedFilter.getFatContentFilter()).isNotNull();
+            assertThat(capturedFilter.getFatContentFilter().isActive()).isTrue();
+            assertThat(capturedFilter.getFatContentFilter().getValue()).contains(new BigDecimal("10"));
+            assertThat(capturedFilter.getFatContentFilter().getOperator()).isEqualTo(NumericFilter.Operator.GREATER_THAN);
+            
+            // Verify protein content filter
+            assertThat(capturedFilter.getProteinContentFilter()).isNotNull();
+            assertThat(capturedFilter.getProteinContentFilter().isActive()).isTrue();
+            assertThat(capturedFilter.getProteinContentFilter().getValue()).contains(new BigDecimal("20"));
+            assertThat(capturedFilter.getProteinContentFilter().getOperator()).isEqualTo(NumericFilter.Operator.EQUAL);
+            
+            // Verify carbs content filter (BETWEEN with multiple values)
+            assertThat(capturedFilter.getCarbsContentFilter()).isNotNull();
+            assertThat(capturedFilter.getCarbsContentFilter().isActive()).isTrue();
+            assertThat(capturedFilter.getCarbsContentFilter().getValue()).contains(new BigDecimal("5"), new BigDecimal("15"));
+            assertThat(capturedFilter.getCarbsContentFilter().getOperator()).isEqualTo(NumericFilter.Operator.BETWEEN);
+            
+            // Verify phenylalanine content filter
+            assertThat(capturedFilter.getPhenylalanineContentFilter()).isNotNull();
+            assertThat(capturedFilter.getPhenylalanineContentFilter().isActive()).isTrue();
+            assertThat(capturedFilter.getPhenylalanineContentFilter().getValue()).contains(new BigDecimal("100"));
+            assertThat(capturedFilter.getPhenylalanineContentFilter().getOperator()).isEqualTo(NumericFilter.Operator.LOWER_THAN);
+            
+            Pageable capturedPageable = pageableCaptor.getValue();
+            assertThat(capturedPageable.getPageNumber()).isEqualTo(0);
+            assertThat(capturedPageable.getPageSize()).isEqualTo(10);
         }
     }
 

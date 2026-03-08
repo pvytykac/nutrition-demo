@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -51,21 +52,17 @@ public class IngredientController {
     @GetMapping
     @Operation(summary = "Search ingredients with filtering and pagination")
     public ResponseEntity<Page<IngredientResponseDTO>> getAllIngredients(
-            @ParameterObject StringFilter name,
-            @ParameterObject NumericFilter fatContent,
-            @ParameterObject NumericFilter proteinContent,
-            @ParameterObject NumericFilter carbsContent,
-            @ParameterObject NumericFilter phenylalanineContent,
+            @ParameterObject IngredientsQueryParameters queryParameters,
             @ParameterObject Pageable pageable) {
         
         log.debug("GET /v1/ingredients - Fetching ingredients with filters and paging");
         
         var filter = IngredientFilter.builder()
-            .nameFilter(name)
-            .fatContentFilter(fatContent)
-            .proteinContentFilter(proteinContent)
-            .carbsContentFilter(carbsContent)
-            .phenylalanineContentFilter(phenylalanineContent)
+            .nameFilter(queryParameters.getName())
+            .fatContentFilter(queryParameters.getFatContent())
+            .proteinContentFilter(queryParameters.getProteinContent())
+            .carbsContentFilter(queryParameters.getCarbsContent())
+            .phenylalanineContentFilter(queryParameters.getPhenylalanineContent())
             .build();
         
         Page<IngredientResponseDTO> ingredientsPage = ingredientService.searchIngredients(filter, pageable);
