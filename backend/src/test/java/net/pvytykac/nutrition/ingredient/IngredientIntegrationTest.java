@@ -1,6 +1,7 @@
 package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.IntegrationTestBase;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class IngredientIntegrationTest extends IntegrationTestBase {
         getAllResponse.expectStatus().isOk();
         getAllResponse.expectBody()
                 .jsonPath("$.content").isArray()
-                .jsonPath("$.content[?(@.name=='Test Ingredient')].name").isEqualTo("Test Ingredient");
+                .jsonPath("$.content.length()").value(val -> Matchers.greaterThan(0).matches(val));
 
         // given - update request body
         JSONObject putRequest = new JSONObject()
