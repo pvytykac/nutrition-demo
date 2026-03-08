@@ -33,12 +33,12 @@ public final class SpecificationBuilder {
             return null;
         }
 
-        String value = filter.getValue().iterator().next();
+        List<String> values = List.copyOf(filter.getValue());
         StringFilter.Operator operator = filter.getOperator();
 
         return (root, _, cb) -> {
             Path<String> field = fieldExpression.apply(root);
-            return applyStringOperator(cb, field, value, operator);
+            return applyStringOperator(cb, field, values, operator);
         };
     }
 
@@ -58,27 +58,27 @@ public final class SpecificationBuilder {
             return null;
         }
 
-        BigDecimal value;
-        BigDecimal secondValue = null;
+        BigDecimal minValue;
+        BigDecimal maxValue = null;
         NumericFilter.Operator operator = filter.getOperator();
 
         switch (operator) {
             case BETWEEN -> {
-                value = filter.getMinValue();
-                secondValue = filter.getMaxValue();
+                minValue = filter.getMinValue();
+                maxValue = filter.getMaxValue();
             }
-            case GREATER_THAN, GREATER_THAN_OR_EQUAL -> value = filter.getMaxValue();
-            case LOWER_THAN, LOWER_THAN_OR_EQUAL -> value = filter.getMinValue();
-            case EQUAL -> value = filter.getSingleValue();
-            default -> value = filter.getSingleValue();
+            case GREATER_THAN, GREATER_THAN_OR_EQUAL -> minValue = filter.getMaxValue();
+            case LOWER_THAN, LOWER_THAN_OR_EQUAL -> minValue = filter.getMinValue();
+            case EQUAL -> minValue = filter.getSingleValue();
+            default -> throw new IllegalStateException("No case defined for operator");
         }
 
-        final BigDecimal finalValue = value;
-        final BigDecimal finalSecondValue = secondValue;
+        final BigDecimal finalMinValue = minValue;
+        final BigDecimal finalMaxValue = maxValue;
 
         return (root, _, cb) -> {
             Path<BigDecimal> field = fieldExpression.apply(root);
-            return applyNumericOperator(cb, field, finalValue, finalSecondValue, operator);
+            return applyNumericOperator(cb, field, finalMinValue, finalMaxValue, operator);
         };
     }
 
@@ -131,27 +131,31 @@ public final class SpecificationBuilder {
     }
 
     private static Predicate applyStringOperator(
-            CriteriaBuilder cb, Path<String> field, String value, StringFilter.Operator operator) {
-        String lowerValue = value.toLowerCase();
+            CriteriaBuilder cb, Path<String> field, List<String> values, StringFilter.Operator operator) {
+        List<String> lowerValues = values.stream()
+                .map(String::toLowerCase)
+                .toList();
         return switch (operator) {
-            case EXACT_MATCH -> cb.equal(cb.lower(field), lowerValue);
-            case STARTS_WITH -> cb.like(cb.lower(field), lowerValue + "%");
-            case ENDS_WITH -> cb.like(cb.lower(field), "%" + lowerValue);
-            case CONTAINS -> cb.like(cb.lower(field), "%" + lowerValue + "%");
-            case IN -> cb.equal(cb.lower(field), lowerValue);
+            case EXACT_MATCH -> cb.equal(cb.lower(field), lowerValues.getFirst());
+            case STARTS_WITH -> cb.like(cb.lower(field), lowerValues.getFirst() + "%");
+            case ENDS_WITH -> cb.like(cb.lower(field), "%" + lowerValues.getFirst());
+            case CONTAINS -> cb.like(cb.lower(field), "%" + lowerValues.getFirst() + "%");
+            case IN -> cb.lower(field).in(lowerValues);
+            default -> throw new IllegalStateException("No case defined for operator");
         };
     }
 
     private static Predicate applyNumericOperator(
-            CriteriaBuilder cb, Path<BigDecimal> field, BigDecimal value,
-            BigDecimal secondValue, NumericFilter.Operator operator) {
+            CriteriaBuilder cb, Path<BigDecimal> field, BigDecimal minValue,
+            BigDecimal maxValue, NumericFilter.Operator operator) {
         return switch (operator) {
-            case EQUAL -> cb.equal(field, value);
-            case GREATER_THAN -> cb.greaterThan(field, value);
-            case GREATER_THAN_OR_EQUAL -> cb.greaterThanOrEqualTo(field, value);
-            case LOWER_THAN -> cb.lessThan(field, value);
-            case LOWER_THAN_OR_EQUAL -> cb.lessThanOrEqualTo(field, value);
-            case BETWEEN -> cb.between(field, value, secondValue != null ? secondValue : value);
+            case EQUAL -> cb.equal(field, minValue);
+            case GREATER_THAN -> cb.greaterThan(field, minValue);
+            case GREATER_THAN_OR_EQUAL -> cb.greaterThanOrEqualTo(field, minValue);
+            case LOWER_THAN -> cb.lessThan(field, minValue);
+            case LOWER_THAN_OR_EQUAL -> cb.lessThanOrEqualTo(field, minValue);
+            case BETWEEN -> cb.between(field, minValue, maxValue != null ? maxValue : minValue);
+            default -> throw new IllegalStateException("No case defined for operator");
         };
     }
 
