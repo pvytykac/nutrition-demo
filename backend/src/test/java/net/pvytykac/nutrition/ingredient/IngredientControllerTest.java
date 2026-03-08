@@ -108,7 +108,7 @@ class IngredientControllerTest extends ControllerTestBase {
             when(ingredientService.createIngredient(any())).thenReturn(response);
 
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/v1/ingredients")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createRequestJSON("Chicken Breast").toString())
@@ -123,12 +123,24 @@ class IngredientControllerTest extends ControllerTestBase {
         @DisplayName("should return 400 Bad Request when name is missing")
         void shouldReturn400WhenNameMissing() throws JSONException {
             // when/then
-            webTestClient.post()
+            withAdminAuth().post()
                     .uri("/v1/ingredients")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createRequestJSONWithoutName().toString())
                     .exchange()
                     .expectStatus().isBadRequest();
+        }
+
+        @Test
+        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
+        void shouldReturn403WhenUserRole() throws JSONException {
+            // when/then
+            withUserAuth().post()
+                    .uri("/v1/ingredients")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(createRequestJSON("Chicken Breast").toString())
+                    .exchange()
+                    .expectStatus().isForbidden();
         }
     }
 
@@ -144,7 +156,7 @@ class IngredientControllerTest extends ControllerTestBase {
             when(ingredientService.getIngredientById(TEST_ID)).thenReturn(response);
 
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/v1/ingredients/{id}", TEST_ID)
                     .exchange()
                     .expectStatus().isOk()
@@ -161,10 +173,20 @@ class IngredientControllerTest extends ControllerTestBase {
                     .thenThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID));
 
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .exchange()
                     .expectStatus().isNotFound();
+        }
+
+        @Test
+        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
+        void shouldReturn403WhenUserRole() {
+            // when/then
+            withUserAuth().get()
+                    .uri("/v1/ingredients/{id}", TEST_ID)
+                    .exchange()
+                    .expectStatus().isForbidden();
         }
     }
 
@@ -182,7 +204,7 @@ class IngredientControllerTest extends ControllerTestBase {
                     .thenReturn(page);
 
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri("/v1/ingredients")
                     .exchange()
                     .expectStatus().isOk()
@@ -236,7 +258,7 @@ class IngredientControllerTest extends ControllerTestBase {
                     .thenReturn(page);
 
             // when/then
-            webTestClient.get()
+            withAdminAuth().get()
                     .uri(uriBuilder -> uriBuilder.path("/v1/ingredients")
                             .queryParam("page", "0")
                             .queryParam("size", "10")
@@ -308,6 +330,16 @@ class IngredientControllerTest extends ControllerTestBase {
             assertThat(capturedPageable.getPageNumber()).isEqualTo(0);
             assertThat(capturedPageable.getPageSize()).isEqualTo(10);
         }
+
+        @Test
+        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
+        void shouldReturn403WhenUserRole() {
+            // when/then
+            withUserAuth().get()
+                    .uri("/v1/ingredients")
+                    .exchange()
+                    .expectStatus().isForbidden();
+        }
     }
 
     @Nested
@@ -322,7 +354,7 @@ class IngredientControllerTest extends ControllerTestBase {
             when(ingredientService.updateIngredient(eq(TEST_ID), any())).thenReturn(response);
 
             // when/then
-            webTestClient.put()
+            withAdminAuth().put()
                     .uri("/v1/ingredients/{id}", TEST_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createRequestJSON("Chicken Breast Updated").toString())
@@ -341,12 +373,24 @@ class IngredientControllerTest extends ControllerTestBase {
                     .thenThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID));
 
             // when/then
-            webTestClient.put()
+            withAdminAuth().put()
                     .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createRequestJSON("NonExistent").toString())
                     .exchange()
                     .expectStatus().isNotFound();
+        }
+
+        @Test
+        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
+        void shouldReturn403WhenUserRole() throws JSONException {
+            // when/then
+            withUserAuth().put()
+                    .uri("/v1/ingredients/{id}", TEST_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(createRequestJSON("Chicken Breast Updated").toString())
+                    .exchange()
+                    .expectStatus().isForbidden();
         }
     }
 
@@ -361,7 +405,7 @@ class IngredientControllerTest extends ControllerTestBase {
             doNothing().when(ingredientService).deleteIngredient(TEST_ID);
 
             // when/then
-            webTestClient.delete()
+            withAdminAuth().delete()
                     .uri("/v1/ingredients/{id}", TEST_ID)
                     .exchange()
                     .expectStatus().isNoContent();
@@ -377,10 +421,20 @@ class IngredientControllerTest extends ControllerTestBase {
                     .when(ingredientService).deleteIngredient(NON_EXISTENT_ID);
 
             // when/then
-            webTestClient.delete()
+            withAdminAuth().delete()
                     .uri("/v1/ingredients/{id}", NON_EXISTENT_ID)
                     .exchange()
                     .expectStatus().isNotFound();
+        }
+
+        @Test
+        @DisplayName("should return 403 Forbidden when user has role 'user' instead of 'admin'")
+        void shouldReturn403WhenUserRole() {
+            // when/then
+            withUserAuth().delete()
+                    .uri("/v1/ingredients/{id}", TEST_ID)
+                    .exchange()
+                    .expectStatus().isForbidden();
         }
     }
 }
