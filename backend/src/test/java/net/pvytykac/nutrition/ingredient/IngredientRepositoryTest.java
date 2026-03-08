@@ -1,8 +1,8 @@
 package net.pvytykac.nutrition.ingredient;
 
 import net.pvytykac.nutrition.RepositoryTestBase;
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
+import net.pvytykac.nutrition.util.filtering.NumericFilter;
+import net.pvytykac.nutrition.util.filtering.StringFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,8 +131,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.nameContains("Ap", StringOperator.CONTAINS);
-        var result = ingredientRepository.findAll(spec);
+        var nameFilter = new StringFilter();
+        nameFilter.setValue(List.of("Ap"));
+        nameFilter.setOperator(StringFilter.Operator.CONTAINS);
+        
+        var filter = IngredientFilter.builder()
+                .nameFilter(nameFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -147,8 +154,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.nameContains("Ap", StringOperator.STARTS_WITH);
-        var result = ingredientRepository.findAll(spec);
+        var nameFilter = new StringFilter();
+        nameFilter.setValue(List.of("Ap"));
+        nameFilter.setOperator(StringFilter.Operator.STARTS_WITH);
+        
+        var filter = IngredientFilter.builder()
+                .nameFilter(nameFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -163,8 +177,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.nameContains("ple", StringOperator.ENDS_WITH);
-        var result = ingredientRepository.findAll(spec);
+        var nameFilter = new StringFilter();
+        nameFilter.setValue(List.of("ple"));
+        nameFilter.setOperator(StringFilter.Operator.ENDS_WITH);
+        
+        var filter = IngredientFilter.builder()
+                .nameFilter(nameFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -172,15 +193,22 @@ class IngredientRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    @DisplayName("should find ingredients by name using EQUALS filter")
-    void shouldFindByNameEqualsFilter() {
+    @DisplayName("should find ingredients by name using EXACT_MATCH filter")
+    void shouldFindByNameExactMatchFilter() {
         // given
         ingredientRepository.deleteAll();
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.nameContains("Apple", StringOperator.EQUALS);
-        var result = ingredientRepository.findAll(spec);
+        var nameFilter = new StringFilter();
+        nameFilter.setValue(List.of("Apple"));
+        nameFilter.setOperator(StringFilter.Operator.EXACT_MATCH);
+        
+        var filter = IngredientFilter.builder()
+                .nameFilter(nameFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -195,9 +223,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.phenylalanineFilter(
-                new BigDecimal("1.0"), null, NumberOperator.GREATER_THAN);
-        var result = ingredientRepository.findAll(spec);
+        var phenylFilter = new NumericFilter();
+        phenylFilter.setValue(List.of(new BigDecimal("1.0")));
+        phenylFilter.setOperator(NumericFilter.Operator.GREATER_THAN);
+        
+        var filter = IngredientFilter.builder()
+                .phenylalanineContentFilter(phenylFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -212,9 +246,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var spec = IngredientFilter.phenylalanineFilter(
-                new BigDecimal("1.0"), null, NumberOperator.LOWER_THAN);
-        var result = ingredientRepository.findAll(spec);
+        var phenylFilter = new NumericFilter();
+        phenylFilter.setValue(List.of(new BigDecimal("1.0")));
+        phenylFilter.setOperator(NumericFilter.Operator.LOWER_THAN);
+        
+        var filter = IngredientFilter.builder()
+                .phenylalanineContentFilter(phenylFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);
@@ -230,9 +270,15 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // when
         // Apple has 0.1, Banana has 2.0 - between 0 and 3 should return both
-        var spec = IngredientFilter.phenylalanineFilter(
-                new BigDecimal("0.0"), new BigDecimal("3.0"), NumberOperator.BETWEEN);
-        var result = ingredientRepository.findAll(spec);
+        var phenylFilter = new NumericFilter();
+        phenylFilter.setValue(List.of(new BigDecimal("0.0"), new BigDecimal("3.0")));
+        phenylFilter.setOperator(NumericFilter.Operator.BETWEEN);
+        
+        var filter = IngredientFilter.builder()
+                .phenylalanineContentFilter(phenylFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(2);
@@ -246,11 +292,20 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         saveTestIngredients();
         
         // when
-        var nameSpec = IngredientFilter.nameContains("Apple", StringOperator.EQUALS);
-        var phenylSpec = IngredientFilter.phenylalanineFilter(
-                new BigDecimal("0.1"), null, NumberOperator.EQUALS);
-        var combinedSpec = IngredientFilter.combine(List.of(nameSpec, phenylSpec));
-        var result = ingredientRepository.findAll(combinedSpec);
+        var nameFilter = new StringFilter();
+        nameFilter.setValue(List.of("Apple"));
+        nameFilter.setOperator(StringFilter.Operator.EXACT_MATCH);
+        
+        var phenylFilter = new NumericFilter();
+        phenylFilter.setValue(List.of(new BigDecimal("0.1")));
+        phenylFilter.setOperator(NumericFilter.Operator.EQUAL);
+        
+        var filter = IngredientFilter.builder()
+                .nameFilter(nameFilter)
+                .phenylalanineContentFilter(phenylFilter)
+                .build();
+        
+        var result = ingredientRepository.findAll(filter.toSpecification());
         
         // then
         assertThat(result).hasSize(1);

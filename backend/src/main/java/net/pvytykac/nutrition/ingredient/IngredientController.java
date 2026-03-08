@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
+import net.pvytykac.nutrition.util.filtering.NumericFilter;
+import net.pvytykac.nutrition.util.filtering.StringFilter;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -53,25 +51,24 @@ public class IngredientController {
     @GetMapping
     @Operation(summary = "Search ingredients with filtering and pagination")
     public ResponseEntity<Page<IngredientResponseDTO>> getAllIngredients(
-            @RequestParam(required = false) String nameValue,
-            @RequestParam(required = false) String nameOperator,
-            @RequestParam(required = false) BigDecimal phenylalanineValue,
-            @RequestParam(required = false) BigDecimal phenylalanineSecondValue,
-            @RequestParam(required = false) String phenylalanineOperator,
+            @ParameterObject StringFilter name,
+            @ParameterObject NumericFilter fatContent,
+            @ParameterObject NumericFilter proteinContent,
+            @ParameterObject NumericFilter carbsContent,
+            @ParameterObject NumericFilter phenylalanineContent,
             @ParameterObject Pageable pageable) {
         
         log.debug("GET /v1/ingredients - Fetching ingredients with filters and paging");
         
-        StringOperator nameOp = nameOperator != null ? StringOperator.valueOf(nameOperator) : null;
-        NumberOperator phenylalanineOp = phenylalanineOperator != null ? NumberOperator.valueOf(phenylalanineOperator) : null;
+        var filter = IngredientFilter.builder()
+            .nameFilter(name)
+            .fatContentFilter(fatContent)
+            .proteinContentFilter(proteinContent)
+            .carbsContentFilter(carbsContent)
+            .phenylalanineContentFilter(phenylalanineContent)
+            .build();
         
-        Page<IngredientResponseDTO> ingredientsPage = ingredientService.searchIngredients(
-                nameValue, 
-                nameOp,
-                phenylalanineValue,
-                phenylalanineSecondValue,
-                phenylalanineOp,
-                pageable);
+        Page<IngredientResponseDTO> ingredientsPage = ingredientService.searchIngredients(filter, pageable);
         
         return ResponseEntity.ok(ingredientsPage);
     }

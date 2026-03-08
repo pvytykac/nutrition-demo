@@ -1,13 +1,14 @@
 package net.pvytykac.nutrition.ingredient;
 
-import net.pvytykac.nutrition.util.filtering.NumberOperator;
-import net.pvytykac.nutrition.util.filtering.StringOperator;
+import net.pvytykac.nutrition.util.filtering.NumericFilter;
+import net.pvytykac.nutrition.util.filtering.StringFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,191 +16,263 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IngredientFilterTest {
 
     @Nested
-    @DisplayName("nameContains")
-    class NameContains {
+    @DisplayName("toSpecification")
+    class ToSpecification {
 
         @Test
-        @DisplayName("should return null when value is null")
-        void shouldReturnNullWhenValueIsNull() {
-            // when
-            Specification<Ingredient> result = IngredientFilter.nameContains(null, StringOperator.EQUALS);
-
-            // then
-            assertThat(result).isNull();
-        }
-
-        @Test
-        @DisplayName("should return null when value is blank")
-        void shouldReturnNullWhenValueIsBlank() {
-            // when
-            Specification<Ingredient> result = IngredientFilter.nameContains("   ", StringOperator.EQUALS);
-
-            // then
-            assertThat(result).isNull();
-        }
-
-        @Test
-        @DisplayName("should apply EQUALS operator")
-        void shouldApplyEqualsOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.nameContains("Chicken", StringOperator.EQUALS);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply STARTS_WITH operator")
-        void shouldApplyStartsWithOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.nameContains("Chicken", StringOperator.STARTS_WITH);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply ENDS_WITH operator")
-        void shouldApplyEndsWithOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.nameContains("Breast", StringOperator.ENDS_WITH);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply CONTAINS operator")
-        void shouldApplyContainsOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.nameContains("icken", StringOperator.CONTAINS);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-    }
-
-    @Nested
-    @DisplayName("phenylalanineFilter")
-    class PhenylalanineFilter {
-
-        @Test
-        @DisplayName("should return null when value is null")
-        void shouldReturnNullWhenValueIsNull() {
-            // when
-            Specification<Ingredient> result = IngredientFilter.phenylalanineFilter(null, null, NumberOperator.EQUALS);
-
-            // then
-            assertThat(result).isNull();
-        }
-
-        @Test
-        @DisplayName("should apply EQUALS operator")
-        void shouldApplyEqualsOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("5.0"), null, NumberOperator.EQUALS);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply GREATER_THAN operator")
-        void shouldApplyGreaterThanOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("5.0"), null, NumberOperator.GREATER_THAN);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply GREATER_THAN_OR_EQUAL operator")
-        void shouldApplyGreaterThanOrEqualOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("5.0"), null, NumberOperator.GREATER_THAN_OR_EQUAL);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply LOWER_THAN operator")
-        void shouldApplyLowerThanOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("5.0"), null, NumberOperator.LOWER_THAN);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply LOWER_THAN_OR_EQUAL operator")
-        void shouldApplyLowerThanOrEqualOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("5.0"), null, NumberOperator.LOWER_THAN_OR_EQUAL);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-
-        @Test
-        @DisplayName("should apply BETWEEN operator")
-        void shouldApplyBetweenOperator() {
-            // when
-            Specification<Ingredient> spec = IngredientFilter.phenylalanineFilter(
-                    new BigDecimal("1.0"), new BigDecimal("10.0"), NumberOperator.BETWEEN);
-
-            // then
-            assertThat(spec).isNotNull();
-        }
-    }
-
-    @Nested
-    @DisplayName("combine")
-    class Combine {
-
-        @Test
-        @DisplayName("should return null when specs list is empty")
-        void shouldReturnNullWhenEmpty() {
-            // when
-            Specification<Ingredient> result = IngredientFilter.combine(java.util.List.of());
-
-            // then
-            assertThat(result).isNull();
-        }
-
-        @Test
-        @DisplayName("should combine single specification")
-        void shouldCombineSingleSpec() {
+        @DisplayName("should return null when all filters are null")
+        void shouldReturnNullWhenAllFiltersNull() {
             // given
-            var specs = java.util.List.of(IngredientFilter.nameContains("test", StringOperator.CONTAINS));
+            var filter = IngredientFilter.builder()
+                    .nameFilter(null)
+                    .fatContentFilter(null)
+                    .proteinContentFilter(null)
+                    .carbsContentFilter(null)
+                    .phenylalanineContentFilter(null)
+                    .build();
 
             // when
-            Specification<Ingredient> result = IngredientFilter.combine(specs);
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("should return null when all filters are inactive")
+        void shouldReturnNullWhenAllFiltersInactive() {
+            // given
+            var nameFilter = new StringFilter();
+            nameFilter.setValue(null);
+
+            var filter = IngredientFilter.builder()
+                    .nameFilter(nameFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("should create specification with name filter only")
+        void shouldCreateSpecificationWithNameFilter() {
+            // given
+            var nameFilter = new StringFilter();
+            nameFilter.setValue(List.of("Apple"));
+            nameFilter.setOperator(StringFilter.Operator.STARTS_WITH);
+
+            var filter = IngredientFilter.builder()
+                    .nameFilter(nameFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
 
             // then
             assertThat(result).isNotNull();
         }
 
         @Test
-        @DisplayName("should combine multiple specifications")
-        void shouldCombineMultipleSpecs() {
+        @DisplayName("should create specification with phenylalanine filter only")
+        void shouldCreateSpecificationWithPhenylalanineFilter() {
             // given
-            var specs = java.util.List.of(
-                    IngredientFilter.nameContains("test", StringOperator.CONTAINS),
-                    IngredientFilter.phenylalanineFilter(new BigDecimal("5.0"), null, NumberOperator.EQUALS));
+            var phenylFilter = new NumericFilter();
+            phenylFilter.setValue(List.of(new BigDecimal("50.0")));
+            phenylFilter.setOperator(NumericFilter.Operator.GREATER_THAN);
+
+            var filter = IngredientFilter.builder()
+                    .phenylalanineContentFilter(phenylFilter)
+                    .build();
 
             // when
-            Specification<Ingredient> result = IngredientFilter.combine(specs);
+            Specification<Ingredient> result = filter.toSpecification();
 
             // then
             assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("should create specification with multiple filters")
+        void shouldCreateSpecificationWithMultipleFilters() {
+            // given
+            var nameFilter = new StringFilter();
+            nameFilter.setValue(List.of("Apple"));
+            nameFilter.setOperator(StringFilter.Operator.CONTAINS);
+
+            var phenylFilter = new NumericFilter();
+            phenylFilter.setValue(List.of(new BigDecimal("50.0")));
+            phenylFilter.setOperator(NumericFilter.Operator.LOWER_THAN);
+
+            var filter = IngredientFilter.builder()
+                    .nameFilter(nameFilter)
+                    .phenylalanineContentFilter(phenylFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("isActive methods")
+    class IsActiveMethods {
+
+        @Test
+        @DisplayName("should detect active name filter")
+        void shouldDetectActiveNameFilter() {
+            // given
+            var nameFilter = new StringFilter();
+            nameFilter.setValue(List.of("Apple"));
+
+            var filter = IngredientFilter.builder()
+                    .nameFilter(nameFilter)
+                    .build();
+
+            // then
+            assertThat(filter.isNameFilterActive()).isTrue();
+            assertThat(filter.isFatContentFilterActive()).isFalse();
+        }
+
+        @Test
+        @DisplayName("should detect inactive name filter")
+        void shouldDetectInactiveNameFilter() {
+            // given
+            var nameFilter = new StringFilter();
+            nameFilter.setValue(null);
+
+            var filter = IngredientFilter.builder()
+                    .nameFilter(nameFilter)
+                    .build();
+
+            // then
+            assertThat(filter.isNameFilterActive()).isFalse();
+        }
+
+        @Test
+        @DisplayName("should create specification with fat content filter")
+        void shouldCreateSpecificationWithFatContentFilter() {
+            // given
+            var fatFilter = new NumericFilter();
+            fatFilter.setValue(List.of(new BigDecimal("10.0")));
+            fatFilter.setOperator(NumericFilter.Operator.GREATER_THAN);
+
+            var filter = IngredientFilter.builder()
+                    .fatContentFilter(fatFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("should create specification with protein content filter")
+        void shouldCreateSpecificationWithProteinContentFilter() {
+            // given
+            var proteinFilter = new NumericFilter();
+            proteinFilter.setValue(List.of(new BigDecimal("5.0")));
+            proteinFilter.setOperator(NumericFilter.Operator.EQUAL);
+
+            var filter = IngredientFilter.builder()
+                    .proteinContentFilter(proteinFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("should create specification with carbs content filter")
+        void shouldCreateSpecificationWithCarbsContentFilter() {
+            // given
+            var carbsFilter = new NumericFilter();
+            carbsFilter.setValue(List.of(new BigDecimal("20.0")));
+            carbsFilter.setOperator(NumericFilter.Operator.LOWER_THAN);
+
+            var filter = IngredientFilter.builder()
+                    .carbsContentFilter(carbsFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("should create specification with all nutrition filters")
+        void shouldCreateSpecificationWithAllNutritionFilters() {
+            // given
+            var fatFilter = new NumericFilter();
+            fatFilter.setValue(List.of(new BigDecimal("1.0")));
+            fatFilter.setOperator(NumericFilter.Operator.GREATER_THAN);
+
+            var proteinFilter = new NumericFilter();
+            proteinFilter.setValue(List.of(new BigDecimal("5.0")));
+            proteinFilter.setOperator(NumericFilter.Operator.EQUAL);
+
+            var carbsFilter = new NumericFilter();
+            carbsFilter.setValue(List.of(new BigDecimal("20.0")));
+            carbsFilter.setOperator(NumericFilter.Operator.LOWER_THAN);
+
+            var phenylFilter = new NumericFilter();
+            phenylFilter.setValue(List.of(new BigDecimal("50.0")));
+            phenylFilter.setOperator(NumericFilter.Operator.GREATER_THAN);
+
+            var filter = IngredientFilter.builder()
+                    .fatContentFilter(fatFilter)
+                    .proteinContentFilter(proteinFilter)
+                    .carbsContentFilter(carbsFilter)
+                    .phenylalanineContentFilter(phenylFilter)
+                    .build();
+
+            // when
+            Specification<Ingredient> result = filter.toSpecification();
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("should detect all active nutrition filters")
+        void shouldDetectAllActiveNutritionFilters() {
+            // given
+            var fatFilter = new NumericFilter();
+            fatFilter.setValue(List.of(new BigDecimal("1.0")));
+
+            var proteinFilter = new NumericFilter();
+            proteinFilter.setValue(List.of(new BigDecimal("5.0")));
+
+            var carbsFilter = new NumericFilter();
+            carbsFilter.setValue(List.of(new BigDecimal("20.0")));
+
+            var phenylFilter = new NumericFilter();
+            phenylFilter.setValue(List.of(new BigDecimal("50.0")));
+
+            var filter = IngredientFilter.builder()
+                    .fatContentFilter(fatFilter)
+                    .proteinContentFilter(proteinFilter)
+                    .carbsContentFilter(carbsFilter)
+                    .phenylalanineContentFilter(phenylFilter)
+                    .build();
+
+            // then
+            assertThat(filter.isFatContentFilterActive()).isTrue();
+            assertThat(filter.isProteinContentFilterActive()).isTrue();
+            assertThat(filter.isCarbsContentFilterActive()).isTrue();
+            assertThat(filter.isPhenylalanineContentFilterActive()).isTrue();
         }
     }
 }
