@@ -9,13 +9,12 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -102,7 +101,6 @@ class IngredientControllerTest extends ControllerTestBase {
         @DisplayName("should return 201 Created with ingredient on success")
         void shouldReturn201CreatedWithIngredient() throws JSONException {
             // given
-            IngredientRequestDTO request = createRequestDTO("Chicken Breast");
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast");
             when(ingredientService.createIngredient(any())).thenReturn(response);
 
@@ -256,7 +254,6 @@ class IngredientControllerTest extends ControllerTestBase {
         @DisplayName("should return 200 OK with updated ingredient")
         void shouldReturn200OnSuccess() throws JSONException {
             // given
-            IngredientRequestDTO request = createRequestDTO("Chicken Breast Updated");
             IngredientResponseDTO response = createResponseDTO(TEST_ID, "Chicken Breast Updated");
             when(ingredientService.updateIngredient(eq(TEST_ID), any())).thenReturn(response);
 
@@ -276,7 +273,6 @@ class IngredientControllerTest extends ControllerTestBase {
         @DisplayName("should return 404 Not Found when ingredient doesn't exist")
         void shouldReturn404WhenNotFound() throws JSONException {
             // given
-            IngredientRequestDTO request = createRequestDTO("NonExistent");
             when(ingredientService.updateIngredient(eq(NON_EXISTENT_ID), any()))
                     .thenThrow(new ResourceNotFoundException("Ingredient", NON_EXISTENT_ID));
 

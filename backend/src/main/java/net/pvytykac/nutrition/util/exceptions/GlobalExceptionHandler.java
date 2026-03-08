@@ -1,11 +1,10 @@
 package net.pvytykac.nutrition.util.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,15 +16,15 @@ import java.net.URI;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     /**
      * Handles ResourceNotFoundException - maps to 404 NOT FOUND.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleResourceNotFound(
-            ResourceNotFoundException ex, 
+            ResourceNotFoundException ex,
             HttpServletRequest request) {
-        
+
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.NOT_FOUND,
             ex.getMessage()
@@ -33,57 +32,22 @@ public class GlobalExceptionHandler {
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("resourceType", ex.getResourceType());
         problemDetail.setProperty("resourceId", ex.getResourceId());
-        
-        return problemDetail;
-    }
-    
-    /**
-     * Handles validation errors from @Valid - maps to 400 BAD REQUEST.
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationException(
-            MethodArgumentNotValidException ex,
-            HttpServletRequest request) {
-        
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST,
-            "Validation failed"
-        );
-        problemDetail.setInstance(URI.create(request.getRequestURI()));
-        
-        return problemDetail;
-    }
-    
-    /**
-     * Handles ConstraintViolationException - maps to 409 CONFLICT.
-     * This occurs when a unique constraint is violated (e.g., duplicate ingredient name).
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(
-            ConstraintViolationException ex,
-            HttpServletRequest request) {
-
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.CONFLICT,
-            "A constraint violation occurred"
-        );
-        problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         return problemDetail;
     }
 
     /**
      * Handles DataIntegrityViolationException - maps to 409 CONFLICT.
-     * This occurs when a database-level unique constraint is violated.
+     * This occurs when a unique constraint is violated (e.g., duplicate ingredient name).
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail handleDataIntegrityViolation(
+    public ProblemDetail handleDataIntegrityViolationException(
             DataIntegrityViolationException ex,
             HttpServletRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.CONFLICT,
-            "A data integrity constraint was violated. The resource may already exist."
+            "A data integrity violation exception occurred"
         );
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 

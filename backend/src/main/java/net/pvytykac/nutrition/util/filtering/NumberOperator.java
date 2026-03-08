@@ -1,7 +1,5 @@
 package net.pvytykac.nutrition.util.filtering;
 
-import java.math.BigDecimal;
-
 /**
  * Operators for number/comparable filtering.
  */

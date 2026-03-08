@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("IngredientService")
+@SuppressWarnings("unchecked")
 class IngredientServiceTest {
 
     @Mock
@@ -44,7 +45,6 @@ class IngredientServiceTest {
     private UUID testId;
     private IngredientRequestDTO createRequestDTO;
     private Ingredient createIngredient;
-    private NutritionDetails createNutritionDetails;
 
     @BeforeEach
     void setUp() {
@@ -65,7 +65,7 @@ class IngredientServiceTest {
                 .nutritionDetails(nutritionRequest)
                 .build();
 
-        createNutritionDetails = NutritionDetails.builder()
+        NutritionDetails createNutritionDetails = NutritionDetails.builder()
                 .fatContent(new BigDecimal("10.5"))
                 .carbsContent(new BigDecimal("20.0"))
                 .proteinContent(new BigDecimal("15.0"))
@@ -185,7 +185,7 @@ class IngredientServiceTest {
 
             // then
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).getName()).isEqualTo("Chicken Breast");
+            assertThat(result.getFirst().getName()).isEqualTo("Chicken Breast");
         }
 
         @Test

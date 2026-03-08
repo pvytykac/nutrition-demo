@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,29 +26,24 @@ import jakarta.validation.ConstraintViolationException;
 @RestController
 @RequestMapping("/test-exceptions")
 public class TestExceptionController {
-    
+
     @GetMapping("/resource-not-found")
     public void throwResourceNotFound(
             @RequestParam String resourceType,
             @RequestParam String id) {
         throw new ResourceNotFoundException(resourceType, id);
     }
-    
+
     @PostMapping("/validation-error")
     public String triggerValidationError(@Valid @RequestBody TestRequest request) {
         return "Success";
     }
-    
-    @GetMapping("/constraint-violation")
-    public void throwConstraintViolation() {
-        throw new ConstraintViolationException("Test constraint violation", null);
+
+    @GetMapping("/data-integrity-violation-exception")
+    public void throwDataIntegrityViolationException() {
+        throw new DataIntegrityViolationException("Test data integrity violation exception", new RuntimeException("Cause"));
     }
-    
-    @GetMapping("/data-integrity-violation")
-    public void throwDataIntegrityViolation() {
-        throw new DataIntegrityViolationException("Test data integrity violation", new RuntimeException("Cause"));
-    }
-    
+
     @Data
     @Builder
     @NoArgsConstructor
@@ -55,7 +51,7 @@ public class TestExceptionController {
     public static class TestRequest {
         @NotBlank
         private String name;
-        
+
         @NotNull
         @PositiveOrZero
         private Integer value;

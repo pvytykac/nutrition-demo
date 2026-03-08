@@ -136,7 +136,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     @Test
@@ -152,7 +152,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     @Test
@@ -168,7 +168,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     @Test
@@ -184,7 +184,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     @Test
@@ -201,7 +201,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Banana");
+        assertThat(result.getFirst().getName()).isEqualTo("Banana");
     }
 
     @Test
@@ -218,7 +218,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     @Test
@@ -254,7 +254,7 @@ class IngredientRepositoryTest extends RepositoryTestBase {
         
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Apple");
+        assertThat(result.getFirst().getName()).isEqualTo("Apple");
     }
 
     private void saveTestIngredients() {

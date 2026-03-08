@@ -185,42 +185,22 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
     }
     
     @Nested
-    @DisplayName("Constraint violation exception handling")
-    class ConstraintViolationExceptionTests {
-        
-        @Test
-        @DisplayName("should return 409 Conflict for ConstraintViolationException")
-        void shouldReturn409ForConstraintViolation() {
-            // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/constraint-violation")
-                    .exchange()
-                    .expectStatus().isEqualTo(409)
-                    .expectBody()
-                    .jsonPath("$.status").isEqualTo(409)
-                    .jsonPath("$.title").isEqualTo("Conflict")
-                    .jsonPath("$.detail").isEqualTo("A constraint violation occurred")
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/constraint-violation").matches(val));
-        }
-    }
-    
-    @Nested
     @DisplayName("Data integrity violation exception handling")
     class DataIntegrityViolationExceptionTests {
         
         @Test
         @DisplayName("should return 409 Conflict for DataIntegrityViolationException")
-        void shouldReturn409ForDataIntegrityViolation() {
+        void shouldReturn409ForDataIntegrityViolationException() {
             // when/then
             webTestClient.get()
-                    .uri("/test-exceptions/data-integrity-violation")
+                    .uri("/test-exceptions/data-integrity-violation-exception")
                     .exchange()
                     .expectStatus().isEqualTo(409)
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(409)
                     .jsonPath("$.title").isEqualTo("Conflict")
-                    .jsonPath("$.detail").isEqualTo("A data integrity constraint was violated. The resource may already exist.")
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/data-integrity-violation").matches(val));
+                    .jsonPath("$.detail").isEqualTo("A data integrity violation exception occurred")
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/data-integrity-violation-exception").matches(val));
         }
     }
 }

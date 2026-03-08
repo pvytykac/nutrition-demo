@@ -1,11 +1,8 @@
 package net.pvytykac.nutrition.util.filtering;
 
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

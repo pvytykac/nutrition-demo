@@ -6,17 +6,13 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 /**
  * Generic filter builder that can create JPA Specifications for any entity type.
- * 
- * @param <T> the entity type to filter
  */
-public final class FilterBuilder<T> {
+public final class FilterBuilder {
 
     private FilterBuilder() {}
 
@@ -38,7 +34,7 @@ public final class FilterBuilder<T> {
             return null;
         }
 
-        return (root, query, cb) -> {
+        return (root, _, cb) -> {
             Path<String> field = rootExtractor.apply(root);
             return applyStringOperator(cb, field, value, operator);
         };
@@ -55,7 +51,6 @@ public final class FilterBuilder<T> {
      * @param <T> the entity type
      * @return a Specification or null if value is null
      */
-    @SuppressWarnings("unchecked")
     public static <Y extends Comparable<Y>, T> Specification<T> comparableFilter(
             Function<Root<T>, Path<Y>> rootExtractor,
             Y value, 
@@ -66,7 +61,7 @@ public final class FilterBuilder<T> {
             return null;
         }
 
-        return (root, query, cb) -> {
+        return (root, _, cb) -> {
             Path<Y> field = rootExtractor.apply(root);
             return applyComparableOperator(cb, field, value, secondValue, operator);
         };
@@ -82,7 +77,6 @@ public final class FilterBuilder<T> {
      * @param <T> the entity type
      * @return a Specification or null if values is null/empty
      */
-    @SuppressWarnings("unchecked")
     public static <Y extends Enum<Y>, T> Specification<T> enumFilter(
             Function<Root<T>, Path<Y>> rootExtractor,
             List<Y> values, 
@@ -92,7 +86,7 @@ public final class FilterBuilder<T> {
             return null;
         }
 
-        return (root, query, cb) -> {
+        return (root, _, cb) -> {
             Path<Y> field = rootExtractor.apply(root);
             return applyEnumOperator(cb, field, values, operator);
         };
@@ -123,7 +117,7 @@ public final class FilterBuilder<T> {
         return combined;
     }
 
-    private static <T> Predicate applyStringOperator(CriteriaBuilder cb, Path<String> field, String value, StringOperator operator) {
+    private static Predicate applyStringOperator(CriteriaBuilder cb, Path<String> field, String value, StringOperator operator) {
         String lowerValue = value.toLowerCase();
         return switch (operator) {
             case EQUALS -> cb.equal(cb.lower(field), lowerValue);
@@ -133,15 +127,9 @@ public final class FilterBuilder<T> {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    private static <Y extends Comparable<Y>, T> Predicate applyComparableOperator(
+    private static <Y extends Comparable<Y>> Predicate applyComparableOperator(
             CriteriaBuilder cb, Path<Y> field, Y value, Y secondValue, NumberOperator operator) {
         
-        // For BigDecimal, we need special handling
-        if (value instanceof BigDecimal) {
-            return applyBigDecimalOperator(cb, (Path<BigDecimal>) field, (BigDecimal) value, (BigDecimal) secondValue, operator);
-        }
-        
         return switch (operator) {
             case EQUALS -> cb.equal(field, value);
             case GREATER_THAN -> cb.greaterThan(field, value);
@@ -152,21 +140,7 @@ public final class FilterBuilder<T> {
         };
     }
 
-    private static <T> Predicate applyBigDecimalOperator(
-            CriteriaBuilder cb, Path<BigDecimal> field, BigDecimal value, BigDecimal secondValue, NumberOperator operator) {
-        
-        return switch (operator) {
-            case EQUALS -> cb.equal(field, value);
-            case GREATER_THAN -> cb.greaterThan(field, value);
-            case GREATER_THAN_OR_EQUAL -> cb.greaterThanOrEqualTo(field, value);
-            case LOWER_THAN -> cb.lessThan(field, value);
-            case LOWER_THAN_OR_EQUAL -> cb.lessThanOrEqualTo(field, value);
-            case BETWEEN -> cb.between(field, value, secondValue != null ? secondValue : value);
-        };
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <Y extends Enum<Y>, T> Predicate applyEnumOperator(
+    private static <Y extends Enum<Y>> Predicate applyEnumOperator(
             CriteriaBuilder cb, Path<Y> field, List<Y> values, EnumOperator operator) {
         
         return switch (operator) {
