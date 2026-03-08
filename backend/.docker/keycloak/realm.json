@@ -125,12 +125,9 @@
       "description": "Client used in Swagger UI and frontend application",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "pA$$w0rd",
       "redirectUris": [
-        "http://localhost:8080/swagger-ui/*",
-        "http://localhost:9000/*",
         "http://localhost:8080/*",
-        "http://localhost:9000"
+        "http://localhost:9000/*"
       ],
       "webOrigins": [
         "http://localhost:8080",
@@ -203,6 +200,56 @@
       "realmRoles": [
         "admin",
         "user"
+      ],
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "user-id",
+      "username": "user@pvytykac.net",
+      "email": "user@pvytykac.net",
+      "firstName": "User",
+      "lastName": "Vytykac",
+      "emailVerified": true,
+      "createdTimestamp": 1704067200000,
+      "enabled": true,
+      "totp": false,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "user"
+      ],
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "admin-id",
+      "username": "admin@pvytykac.net",
+      "email": "admin@pvytykac.net",
+      "firstName": "Admin",
+      "lastName": "Vytykac",
+      "emailVerified": true,
+      "createdTimestamp": 1704067200000,
+      "enabled": true,
+      "totp": false,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "admin"
       ],
       "notBefore": 0,
       "groups": []

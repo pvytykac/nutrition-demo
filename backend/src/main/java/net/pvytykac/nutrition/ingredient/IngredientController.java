@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.pvytykac.nutrition.util.security.HasAdminRole;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @RequestMapping("/v1/ingredients")
 @RequiredArgsConstructor
 @Tag(name = "Ingredients", description = "Ingredient management API")
+@HasAdminRole
 public class IngredientController {
 
     private final IngredientService ingredientService;

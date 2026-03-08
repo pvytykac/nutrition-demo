@@ -1,17 +1,25 @@
 package net.pvytykac.nutrition.util.exceptions;
 
-import net.pvytykac.nutrition.ControllerTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.Matchers.containsString;
 
 @WebMvcTest(controllers = {GlobalExceptionHandler.class, TestExceptionController.class})
+@AutoConfigureWebTestClient
+@Import(TestSecurityConfig.class)
 @DisplayName("GlobalExceptionHandler")
-class GlobalExceptionHandlerTest extends ControllerTestBase {
+class GlobalExceptionHandlerTest {
+
+    @Autowired
+    protected WebTestClient webTestClient;
 
     @Nested
     @DisplayName("ResourceNotFoundException handling")
@@ -21,7 +29,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should return 404 with correct ProblemDetail structure")
         void shouldReturn404WithProblemDetail() {
             // when/then
-            withAdminAuth().get()
+            webTestClient.get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Recipe&id=123")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -38,7 +46,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should handle Ingredient resource type")
         void shouldHandleIngredientResourceType() {
             // when/then
-            withAdminAuth().get()
+            webTestClient.get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Ingredient&id=999")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -53,7 +61,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should handle Meal resource type")
         void shouldHandleMealResourceType() {
             // when/then
-            withAdminAuth().get()
+            webTestClient.get()
                     .uri("/test-exceptions/resource-not-found?resourceType=Meal&id=42")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -68,7 +76,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should include instance URI in response")
         void shouldIncludeInstanceUri() {
             // when/then
-            withAdminAuth().get()
+            webTestClient.get()
                     .uri("/test-exceptions/resource-not-found?resourceType=User&id=abc123")
                     .exchange()
                     .expectStatus().isNotFound()
@@ -92,7 +100,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            withAdminAuth().post()
+            webTestClient.post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -115,7 +123,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            withAdminAuth().post()
+            webTestClient.post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -135,7 +143,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            withAdminAuth().post()
+            webTestClient.post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -155,7 +163,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            withAdminAuth().post()
+            webTestClient.post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
@@ -173,7 +181,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .build();
             
             // when/then
-            withAdminAuth().post()
+            webTestClient.post()
                     .uri("/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(validRequest)
@@ -192,7 +200,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
         @DisplayName("should return 409 Conflict for DataIntegrityViolationException")
         void shouldReturn409ForDataIntegrityViolationException() {
             // when/then
-            withAdminAuth().get()
+            webTestClient.get()
                     .uri("/test-exceptions/data-integrity-violation-exception")
                     .exchange()
                     .expectStatus().isEqualTo(409)

@@ -1,4 +1,4 @@
-package net.pvytykac.nutrition.config;
+package net.pvytykac.nutrition.util.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,19 +31,18 @@ import java.util.stream.Stream;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${cors.allowed-origins:http://localhost:9000,http://localhost:8080}")
+    @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/v1/ingredients/**").hasRole("admin")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
@@ -71,7 +71,7 @@ public class SecurityConfig {
                 List<String> roles = (List<String>) realmAccess.get("roles");
                 List<SimpleGrantedAuthority> realmRoles = roles.stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toList());
+                    .toList();
                 
                 authorities = Stream.concat(authorities.stream(), realmRoles.stream())
                     .collect(Collectors.toList());
