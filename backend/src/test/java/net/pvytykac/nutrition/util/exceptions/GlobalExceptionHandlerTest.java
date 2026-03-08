@@ -29,7 +29,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .jsonPath("$.status").isEqualTo(404)
                     .jsonPath("$.title").isEqualTo("Not Found")
                     .jsonPath("$.detail").isEqualTo("Recipe not found with id: 123")
-                    .jsonPath("$.instance").value(containsString("/test-exceptions/resource-not-found"))
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/resource-not-found").matches(val))
                     .jsonPath("$.resourceType").isEqualTo("Recipe")
                     .jsonPath("$.resourceId").isEqualTo("123");
         }
@@ -74,7 +74,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .expectStatus().isNotFound()
                     .expectBody()
                     .jsonPath("$.instance").exists()
-                    .jsonPath("$.instance").value(containsString("/test-exceptions"));
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions").matches(val));
         }
     }
     
@@ -102,7 +102,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .jsonPath("$.status").isEqualTo(400)
                     .jsonPath("$.title").isEqualTo("Bad Request")
                     .jsonPath("$.detail").isEqualTo("Invalid request content.")
-                    .jsonPath("$.instance").value(containsString("/test-exceptions/validation-error"));
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/validation-error").matches(val));
         }
         
         @Test
@@ -200,7 +200,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .jsonPath("$.status").isEqualTo(409)
                     .jsonPath("$.title").isEqualTo("Conflict")
                     .jsonPath("$.detail").isEqualTo("A constraint violation occurred")
-                    .jsonPath("$.instance").value(containsString("/test-exceptions/constraint-violation"));
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/constraint-violation").matches(val));
         }
     }
     
@@ -220,7 +220,7 @@ class GlobalExceptionHandlerTest extends ControllerTestBase {
                     .jsonPath("$.status").isEqualTo(409)
                     .jsonPath("$.title").isEqualTo("Conflict")
                     .jsonPath("$.detail").isEqualTo("A data integrity constraint was violated. The resource may already exist.")
-                    .jsonPath("$.instance").value(containsString("/test-exceptions/data-integrity-violation"));
+                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/data-integrity-violation").matches(val));
         }
     }
 }
