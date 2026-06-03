@@ -119,13 +119,17 @@ In tests, use mock JWT tokens that simulate roles:
 
 ```java
 // Admin role
-withAdminAuth().get()
+getRestHelper()
+    .withAdminAuth()
+    .get()
     .uri("/v1/ingredients")
     .exchange()
     .expectStatus().isOk();
 
 // User role (will get 403 on admin endpoints)
-withUserAuth().post()
+getRestHelper()
+    .withUserAuth()
+    .post()
     .uri("/v1/ingredients")
     .exchange()
     .expectStatus().isForbidden();
@@ -150,7 +154,7 @@ public class RecipesController { }
 
 2. All endpoints now require authentication and the specified role
 
-3. Write tests using `ControllerTestBase` with `withAdminAuth()`
+3. Write tests using `ControllerTestBase` with `getRestHelper()`
 
 ## Token Acquisition (Development)
 

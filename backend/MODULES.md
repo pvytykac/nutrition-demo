@@ -7,7 +7,7 @@ Modular monolith designed for eventual extraction to microservices. Each module 
 | Module | Responsibility | REST Prefix |
 |---|---|---|
 | **user** | User profiles, roles (USER/ADMIN), social login | `/v1/users` |
-| **nutritional-detail** | Reference nutrient definitions (Protein, Phenylalanine, etc.) | `/v1/nutritional-details` |
+| **nutritient** | Reference nutrient definitions (Protein, Phenylalanine, etc.) | `/v1/nutritients` |
 | **ingredient** | Pantry items + nutritional facts per 100g, voting | `/v1/ingredients` |
 | **recipe** | Recipes (ingredient compositions), voting | `/v1/recipes` |
 | **nutrition-log** | Daily food intake logging, pre-computed nutrition snapshots | `/v1/log` |
@@ -132,7 +132,7 @@ CREATE TABLE ingredients (
 
 CREATE TABLE ingredient_nutrition (
     ingredient_id UUID NOT NULL REFERENCES ingredients(id),
-    nutritional_detail_id UUID NOT NULL,           -- no FK (nutritional-detail module's data)
+    nutritional_detail_id UUID NOT NULL,           -- no FK (nutritient module's data)
     amount_per_100g DECIMAL(19, 4) NOT NULL,
     PRIMARY KEY (ingredient_id, nutritional_detail_id)
 );
@@ -170,7 +170,7 @@ CREATE TABLE recipe_ingredients (
 
 CREATE TABLE recipe_nutrition (
     recipe_id UUID NOT NULL REFERENCES recipes(id),
-    nutritional_detail_id UUID NOT NULL,           -- no FK (nutritional-detail module's data)
+    nutritional_detail_id UUID NOT NULL,           -- no FK (nutritient module's data)
     amount_per_serving DECIMAL(19, 4) NOT NULL,
     PRIMARY KEY (recipe_id, nutritional_detail_id)
 );
@@ -302,7 +302,7 @@ Events are published via `ApplicationEventPublisher` and stored in `application_
 | Event | Publisher | Consumers | Payload |
 |---|---|---|---|
 | `UserRegistered` | user | (future: notifications) | userId |
-| `NutritionalDetailCreated` | nutritional-detail | (future: search indexing) | detailId, code, name |
+| `NutritionalDetailCreated` | nutritient | (future: search indexing) | detailId, code, name |
 | `IngredientCreated` | ingredient | request (if from approved edit request) | ingredientId, createdBy |
 | `IngredientVerified` | ingredient | recipe (flag stale recipes), request (fulfill edit request) | ingredientId |
 | `IngredientSoftDeleted` | ingredient | recipe (flag recipes using this ingredient) | ingredientId |
@@ -374,17 +374,17 @@ POST /v1/log {sourceType: "RECIPE", sourceId, amount: 2, unit: "PORTION", date}
 ### Nutritional Detail Request
 
 ```
-User: POST /v1/requests/nutritional-details {name, measurementUnit, description}
+User: POST /v1/requests/nutritients {name, measurementUnit, description}
   → save NutritionalDetailRequest (status = PENDING)
   → publish NutritionalDetailRequested
 
-Admin: POST /v1/requests/nutritional-details/{id}/approve
+Admin: POST /v1/requests/nutritients/{id}/approve
   → RequestService (@Transactional)
   → create NutritionalDetail via NutritionalDetailService
   → status = APPROVED, reviewed_by, reviewed_at
   → publish NutritionalDetailCreated + NutritionalDetailRequestApproved
 
-Admin: POST /v1/requests/nutritional-details/{id}/reject {reason}
+Admin: POST /v1/requests/nutritients/{id}/reject {reason}
   → status = REJECTED, rejection_reason
   → publish NutritionalDetailRequestRejected
 ```
@@ -429,13 +429,13 @@ Admin: POST /v1/requests/nutritional-details/{id}/reject {reason}
 | `POST` | `/v1/users` | ADMIN | Create user |
 | `GET` | `/v1/users/me` | USER | Current user profile |
 
-### Nutritional Detail (`/v1/nutritional-details`)
+### Nutritional Detail (`/v1/nutritients`)
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/nutritional-details` | any | List all nutrients |
-| `GET` | `/v1/nutritional-details/{id}` | any | Get single nutrient |
-| `POST` | `/v1/nutritional-details` | ADMIN | Create nutrient |
+| `GET` | `/v1/nutritients` | any | List all nutrients |
+| `GET` | `/v1/nutritients/{id}` | any | Get single nutrient |
+| `POST` | `/v1/nutritients` | ADMIN | Create nutrient |
 
 ### Ingredient (`/v1/ingredients`)
 
@@ -474,10 +474,10 @@ Admin: POST /v1/requests/nutritional-details/{id}/reject {reason}
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/requests/nutritional-details` | ADMIN | List pending requests |
-| `POST` | `/v1/requests/nutritional-details` | USER | Create request |
-| `POST` | `/v1/requests/nutritional-details/{id}/approve` | ADMIN | Approve + create detail |
-| `POST` | `/v1/requests/nutritional-details/{id}/reject` | ADMIN | Reject with reason |
+| `GET` | `/v1/requests/nutritients` | ADMIN | List pending requests |
+| `POST` | `/v1/requests/nutritients` | USER | Create request |
+| `POST` | `/v1/requests/nutritients/{id}/approve` | ADMIN | Approve + create detail |
+| `POST` | `/v1/requests/nutritients/{id}/reject` | ADMIN | Reject with reason |
 | `GET` | `/v1/requests/edits` | ADMIN | List edit requests |
 | `POST` | `/v1/requests/edits` | USER | Propose edit to ingredient/recipe |
 | `POST` | `/v1/requests/edits/{id}/approve` | ADMIN | Approve edit |
