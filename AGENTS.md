@@ -75,7 +75,7 @@ docker compose down
 
 ### Package Structure
 
-Flat package structure under `net.pvytykac.nutrition`. Each module has its own package containing entity, repository, service, controller, and DTO classes. Global/shared classes under `net.pvytykac.nutrition.common`.
+**Spring Modulith** structure under `net.pvytykac.nutrition`. Each module is a package with a public **NamedInterface** at the root and implementation classes inside an `internal/` subpackage. The `common` package holds shared cross-cutting concerns. See [MODULES.md](backend/MODULES.md) and [ARCHITECTURE.md](backend/ARCHITECTURE.md) for details.
 
 ### REST API Conventions
 
@@ -100,6 +100,7 @@ Flat package structure under `net.pvytykac.nutrition`. Each module has its own p
 
 - Java 25
 - Spring Boot 4.0.3
+- Spring Modulith
 - PostgreSQL 18 + Testcontainers
 - JPA/Hibernate with JPA ModelGen
 - Liquibase for migrations

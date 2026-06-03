@@ -74,8 +74,9 @@ Requires `ROLE_admin` authority:
 
 ```java
 @RestController
+@RequestMapping("/v1/ingredients")
 @HasAdminRole
-public class IngredientController {
+public class IngredientsController {
     // All endpoints require admin role
 }
 ```
@@ -86,8 +87,9 @@ Requires `ROLE_user` authority:
 
 ```java
 @RestController
+@RequestMapping("/v1/recipes")
 @HasUserRole
-public class RecipeController {
+public class RecipesController {
     // All endpoints require user role
 }
 ```
@@ -98,14 +100,15 @@ Apply at class level for all methods, or method level for specific endpoints:
 
 ```java
 @RestController
+@RequestMapping("/v1/meals")
 @HasUserRole  // Default for all methods
-public class MealController {
+public class MealsController {
     
     @GetMapping
     public ResponseEntity<List<Meal>> getMeals() { }
     
     @PostMapping
-    @HasAdminRole  // Override - only admins can create
+    @HasAdminRole  // Override — only admins can create
     public ResponseEntity<Meal> createMeal() { }
 }
 ```
@@ -142,7 +145,7 @@ Converts token strings to mock JWTs:
 @RestController
 @RequestMapping("/v1/recipes")
 @HasAdminRole
-public class RecipeController { }
+public class RecipesController { }
 ```
 
 2. All endpoints now require authentication and the specified role

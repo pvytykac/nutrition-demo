@@ -19,24 +19,23 @@ Three abstract base classes provide common configuration:
 For testing Spring MVC controllers with `WebTestClient`.
 
 ```java
-@WebMvcTest(IngredientController.class)
-class IngredientControllerTest extends ControllerTestBase {
+@WebMvcTest(controllers = IngredientsController.class)
+class IngredientsControllerTest extends ControllerTestBase {
     @MockitoBean
     private IngredientService ingredientService;
     
     @Test
     void shouldReturn200WhenFound() {
-        withAdminAuth().get()
+        getRestHelper().withAdminAuth().get()
             .uri("/v1/ingredients/{id}", testId)
             .exchange()
             .expectStatus().isOk();
     }
 }
-```
 
 **Features:**
 - Pre-configured `WebTestClient`
-- Authentication helpers: `withAdminAuth()`, `withUserAuth()`
+- Authentication helpers: `getRestHelper().withAdminAuth()`, `getRestHelper().withUserAuth()`
 - Security configuration imported
 - Use `@MockitoBean` to mock service layer
 
@@ -134,9 +133,9 @@ class IngredientServiceTest {
 ## Controller Test Pattern
 
 ```java
-@WebMvcTest(IngredientController.class)
-@DisplayName("IngredientController")
-class IngredientControllerTest extends ControllerTestBase {
+@WebMvcTest(controllers = IngredientsController.class)
+@DisplayName("IngredientsController")
+class IngredientsControllerTest extends ControllerTestBase {
     
     @MockitoBean
     private IngredientService ingredientService;
@@ -147,8 +146,9 @@ class IngredientControllerTest extends ControllerTestBase {
         when(ingredientService.createIngredient(any())).thenReturn(response);
         
         // when/then
-        withAdminAuth().post()
-            .uri("/v1/ingredients")
+        getRestHelper().withAdminAuth().post()
+            .uri("/ingredients")
+            .apiVersion("v1")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(jsonBody)
             .exchange()
@@ -160,8 +160,9 @@ class IngredientControllerTest extends ControllerTestBase {
     
     @Test
     void shouldReturn403WhenUserRole() {
-        withUserAuth().post()
-            .uri("/v1/ingredients")
+        getRestHelper().withUserAuth().post()
+            .uri("/ingredients")
+            .apiVersion("v1")
             .exchange()
             .expectStatus().isForbidden();
     }
@@ -230,12 +231,12 @@ private IngredientResponseDTO createResponseDTO(UUID id, String name) {
 
 ## Mocking Authentication
 
-The `TestJwtDecoderConfig` creates mock JWTs based on token content:
+The `TestJwtDecoderConfiguration` creates mock JWTs based on token content:
 
 - `mock-token-admin` → user has "admin" role
 - `mock-token-user` → user has "user" role
 
-Use `withAdminAuth()` or `withUserAuth()` from `ControllerTestBase`.
+Use `getRestHelper().withAdminAuth()` or `getRestHelper().withUserAuth()` from `ControllerTestBase`.
 
 ## Running Tests
 

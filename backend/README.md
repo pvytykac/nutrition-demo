@@ -8,12 +8,34 @@ REST APIs allowing users to manage lists of ingredients and recipes with the goa
 The backend can also provide next-meal suggestions to users based on the meals they had already logged for the day and their nutrition goals.
 We keep track of daily intake of fats, carbs and protein, including individual amino acids, especially phenylalanine (PKU).
 
-## Package structure
+## Package Structure
 
-Flat package structure nested under the root package: `net.pvytykac.nutrition`
-Each module gets its own package, all the entity, repository, service, controller and representation classes live in this one package.
-The visibility of classes is package private by default, only the classes that are required in other packages/modules are public - typically this would only be representation classes, in some circumstances service classes.
-Global beans, shared helpers and generic reusable classes are all nested under the `net.pvytykac.nutrition.common` package.
+**Spring Modulith** modular monolith. Each module is a package under `net.pvytykac.nutrition`:
+
+```
+net.pvytykac.nutrition/
+├── NutritionDemoApplication.java
+├── OpenApiConfiguration.java
+├── common/           # shared cross-cutting concerns
+│   ├── exceptions/
+│   ├── filtering/
+│   └── security/
+├── ingredient/
+│   ├── (public NamedInterface)
+│   └── internal/     # entity, repository, service, controller
+├── nutrient/
+│   ├── (public NamedInterface)
+│   └── internal/
+└── recipe/
+    ├── (public NamedInterface)
+    └── internal/
+```
+
+Each module exposes a **public NamedInterface** for cross-module API calls. Implementation classes (entities, repositories, services, controllers) live in an `internal/` subpackage and are package-private. The `common` module is declared as a shared module via `@Modulithic(sharedModules = {"common"})`.
+
+Global beans, shared helpers and generic reusable classes live under `net.pvytykac.nutrition.common`.
+
+See [MODULES.md](MODULES.md) for the full module catalog and [ARCHITECTURE.md](ARCHITECTURE.md) for detailed conventions.
 
 ## Technology Stack
 - Java 25
@@ -22,12 +44,14 @@ Global beans, shared helpers and generic reusable classes are all nested under t
 - PostgreSQL 18
 - Liquibase for database migrations
 
-## Technologies used
+## Technologies Used
+* Spring Modulith — modular monolith structure with `@ApplicationModule`, `@Modulithic`, and transactional events
 * PostgreSQL 18 for persistence
 * Hibernate + JPA as ORM
 * Liquibase for database migrations
-* Spring events with JPA persistence to implement cross module functionality without coupling everything together
-* Docker compose - there's a `compose.yaml` file that declares all external services used by the project, e.g. PostgreSQL container
+* NamedInterfaces — typed in-process module APIs designed for eventual extraction to HTTP clients
+* Spring Modulith transactional events for reliable cross-module communication
+* Docker compose — `compose.yaml` declares all external services (PostgreSQL, Keycloak)
 
 ## Running
 ```bash

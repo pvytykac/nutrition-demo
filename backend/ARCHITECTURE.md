@@ -4,68 +4,88 @@ This document explains the architectural decisions and conventions used in this 
 
 ## Package Structure Philosophy
 
-We use a **flat package structure** where all classes related to a module live in a single package.
+We use a **Spring Modulith** structure where each module is a self-contained package with a public API surface and internal implementation hidden in an `internal/` subpackage.
 
 ```
 net.pvytykac.nutrition/
-├── ingredient/           # All ingredient-related classes
-│   ├── Ingredient.java              # Entity
-│   ├── IngredientRepository.java    # Repository
-│   ├── IngredientService.java       # Service
-│   ├── IngredientController.java    # Controller
-│   ├── IngredientRequestDTO.java    # Request DTO
-│   ├── IngredientResponseDTO.java   # Response DTO
-│   ├── IngredientFilter.java        # Filter logic
-│   └── ...
-└── common/               # Shared components
-    ├── exceptions/
-    ├── filtering/
-    └── security/
+├── NutritionDemoApplication.java     # @Modulithic entry point
+├── OpenApiConfiguration.java
+├── common/                           # shared cross-cutting (sharedModules)
+│   ├── exceptions/
+│   ├── filtering/
+│   └── security/
+├── ingredient/
+│   ├── package-info.java             # @ApplicationModule
+│   ├── IngredientLookup.java         # public NamedInterface
+│   └── internal/
+│       ├── Ingredient.java           # entity
+│       ├── IngredientRepository.java # repository
+│       ├── IngredientService.java    # service
+│       ├── IngredientsController.java# controller
+│       ├── IngredientRequestDTO.java # DTO
+│       └── ...
+├── nutrient/
+│   ├── package-info.java
+│   ├── NutrientLookup.java
+│   └── internal/
+│       ├── Nutrient.java
+│       ├── ...
+└── recipe/
+    ├── package-info.java
+    ├── RecipeLookup.java
+    └── internal/
+        ├── Recipe.java
+        └── ...
 ```
 
-### Why Flat Structure?
+### Why This Structure?
 
-- **Encapsulation**: All related classes are co-located and can be package-private
-- **Simplicity**: No need to navigate deep hierarchies
-- **Module Focus**: Each package represents a complete feature/module
-- **Visibility Control**: Package-private by default, public only when necessary
+- **Encapsulation**: Implementation details are hidden in `internal/` — other modules can only depend on the public NamedInterface
+- **Extractability**: Each module is designed so it could be extracted to a separate microservice by swapping the NamedInterface for an HTTP client
+- **Module Focus**: Each top-level package represents a complete bounded context
+- **Visibility Control**: `internal/` classes stay package-private; only the NamedInterface and DTOs are public
 
 ## Visibility Conventions
 
-**Package-private by default** - only make classes public when they need to be accessed from other packages:
+**Package-private by default** — only make classes public when they need to be accessed from other packages:
 
-| Component | Visibility | Reason |
-|-----------|-----------|---------|
-| Controllers | `public` | Must be accessible by Spring |
-| DTOs | `public` | Cross-package serialization |
-| Services | package-private | Only used within module |
-| Repositories | package-private | Only used within module |
-| Entities | package-private | Only used within module |
+| Component | Visibility | Location | Reason |
+|-----------|-----------|----------|--------|
+| Controllers | `public` | `module/internal/` | Must be accessible by Spring |
+| DTOs | `public` | `module/internal/` or `module/` | Cross-module serialization |
+| NamedInterfaces | `public` | `module/` | Cross-module API surface |
+| Services | package-private | `module/internal/` | Module-internal use |
+| Repositories | package-private | `module/internal/` | Module-internal use |
+| Entities | package-private | `module/internal/` | Module-internal use |
 
 ## Module Creation Checklist
 
-When creating a new module (e.g., `recipe`, `meal`, `user`):
+When creating a new module under `net.pvytykac.nutrition.{moduleName}`:
 
-1. **Create package** under `net.pvytykac.nutrition.{moduleName}`
-2. **Entity** - JPA entity with UUID id, Lombok annotations
-3. **Repository** - extends `JpaRepository` + `JpaSpecificationExecutor`
-4. **Service** - package-private, `@Transactional`, manual DTO mapping
-5. **Controller** - public, `@RestController`, `@RequestMapping("/v1/{plural}")`
-6. **DTOs** - Request and Response DTOs with validation
-7. **Filter** (optional) - if entity needs query parameter filtering
-8. **Tests** - Service, Controller, and Repository tests
+1. **Create `package-info.java`** — annotate with `@ApplicationModule`
+2. **Create `internal/` subpackage** — all implementation classes go here
+3. **Entity** — JPA entity with UUID id, Lombok annotations (in `internal/`)
+4. **Repository** — extends `JpaRepository` + `JpaSpecificationExecutor` (in `internal/`)
+5. **Service** — `@Transactional`, manual DTO mapping (in `internal/`, package-private)
+6. **Controller** — `@RestController`, `@RequestMapping("/v1/{plural}")` (in `internal/`)
+7. **DTOs** — Request and Response DTOs with validation (in `internal/`)
+8. **NamedInterface** — public interface at module root for cross-module access
+9. **Filter** (optional) — if entity needs query parameter filtering (in `internal/`)
+10. **Register in `@Modulithic`** if it needs to be a shared module (like `common`)
+11. **Tests** — Service, Controller, and Repository tests
 
 ## Technology Stack
 
-- **Java 25** - Latest LTS features
-- **Spring Boot 4** - Framework
-- **PostgreSQL 18** - Database
-- **JPA/Hibernate** - ORM with JPA ModelGen for type-safe queries
-- **Liquibase** - Database migrations
-- **Lombok** - Boilerplate reduction
-- **OpenAPI/Swagger** - API documentation
-- **OAuth2/JWT** - Authentication via Keycloak
-- **Testcontainers** - Integration testing
+- **Java 25** — Latest LTS features
+- **Spring Boot 4** — Framework
+- **Spring Modulith** — Modular monolith structure with `@ApplicationModule`, `@Modulithic`, and transactional events
+- **PostgreSQL 18** — Database
+- **JPA/Hibernate** — ORM with JPA ModelGen for type-safe queries
+- **Liquibase** — Database migrations
+- **Lombok** — Boilerplate reduction
+- **OpenAPI/Swagger** — API documentation
+- **OAuth2/JWT** — Authentication via Keycloak
+- **Testcontainers** — Integration testing
 
 ## Design Patterns
 
@@ -112,14 +132,16 @@ class EntityService {
 
 ### Controller Pattern
 
+Controllers live in the `internal/` subpackage of each module:
+
 ```java
 @Slf4j
 @RestController
 @RequestMapping("/v1/entities")
 @RequiredArgsConstructor
 @Tag(name = "Entities")
-@HasAdminRole  // or @HasUserRole
-public class EntityController {
+@HasAdminRole  // or @HasUserRole, @HasUserOrAdminRole
+public class EntitiesController {
     // CRUD endpoints
 }
 ```
