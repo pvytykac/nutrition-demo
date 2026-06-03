@@ -1,4 +1,11 @@
 spring:
+  modulith:
+    events:
+      republish-outstanding-events-on-restart: true
+      completion-mode: archive
+    runtime:
+      flyway-enabled: true
+      verification-enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/nutrition_demo?currentSchema=nutrition
     username: nutrition
@@ -14,34 +21,31 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.xml
   mvc:
     problemdetails:
       enabled: true
+# todo: sounds good, doesn't work, this is tripping swagger
+#    apiversion:
+#      default: 1.0
+#      detect-supported: true
+#      use:
+#        path-segment: 0
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8000/realms/nutrition
-
 server:
   port: 8080
-
 logging:
   level:
+    root: WARN
     net.pvytykac.nutrition: DEBUG
-
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
     oauth:
       client-id: ui
       use-pkce-with-authorization-code-grant: true
-
 cors:
   allowed-origins: http://localhost:9000,http://localhost:8080
