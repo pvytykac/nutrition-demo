@@ -42,7 +42,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.stringFilter(
                     filter,
-                    (root) -> root.get("name")
+                    (root) -> root.get(TestEntity_.NAME)
             );
 
             // when
@@ -66,7 +66,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.stringFilter(
                     filter,
-                    (root) -> root.get("name")
+                    (root) -> root.get(TestEntity_.NAME)
             );
 
             // when
@@ -90,7 +90,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.stringFilter(
                     filter,
-                    (root) -> root.get("name")
+                    (root) -> root.get(TestEntity_.NAME)
             );
 
             // when
@@ -114,7 +114,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.stringFilter(
                     filter,
-                    (root) -> root.get("name")
+                    (root) -> root.get(TestEntity_.NAME)
             );
 
             // when
@@ -138,7 +138,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.stringFilter(
                     filter,
-                    (root) -> root.get("name")
+                    (root) -> root.get(TestEntity_.NAME)
             );
 
             // when
@@ -167,7 +167,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -191,7 +191,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -215,7 +215,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -239,7 +239,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -263,7 +263,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -288,7 +288,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -312,7 +312,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.numericFilter(
                     filter,
-                    (root) -> root.get("weight")
+                    (root) -> root.get(TestEntity_.WEIGHT)
             );
 
             // when
@@ -341,7 +341,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.enumFilter(
                     filter,
-                    (root) -> root.get("status")
+                    (root) -> root.get(TestEntity_.STATUS)
             );
 
             // when
@@ -365,7 +365,7 @@ class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
             Specification<TestEntity> spec = SpecificationBuilder.enumFilter(
                     filter,
-                    (root) -> root.get("status")
+                    (root) -> root.get(TestEntity_.STATUS)
             );
 
             // when
