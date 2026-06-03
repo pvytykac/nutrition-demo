@@ -1,25 +1,17 @@
 package net.pvytykac.nutrition.common.exceptions;
 
+import net.pvytykac.nutrition.common.ControllerTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.Matchers.containsString;
 
-@WebMvcTest(controllers = {GlobalExceptionHandler.class, TestExceptionController.class})
-@AutoConfigureWebTestClient
-@Import(TestSecurityConfig.class)
+@WebMvcTest(controllers = TestExceptionController.class)
 @DisplayName("GlobalExceptionHandler")
-class GlobalExceptionHandlerTest {
-
-    @Autowired
-    protected WebTestClient webTestClient;
+class GlobalExceptionHandlerTest extends ControllerTestBase {
 
     @Nested
     @DisplayName("ResourceNotFoundException handling")
@@ -29,25 +21,29 @@ class GlobalExceptionHandlerTest {
         @DisplayName("should return 404 with correct ProblemDetail structure")
         void shouldReturn404WithProblemDetail() {
             // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/resource-not-found?resourceType=Recipe&id=123")
+            getRestHelper()
+                    .unauthenticated()
+                    .get()
+                    .uri("/public/v1/test-exceptions/resource-not-found?resourceType=Recipe&id=123")
                     .exchange()
                     .expectStatus().isNotFound()
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(404)
                     .jsonPath("$.title").isEqualTo("Not Found")
                     .jsonPath("$.detail").isEqualTo("Recipe not found with id: 123")
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/resource-not-found").matches(val))
+                    .jsonPath("$.instance").value(val -> containsString("/public/v1/test-exceptions/resource-not-found").matches(val))
                     .jsonPath("$.resourceType").isEqualTo("Recipe")
                     .jsonPath("$.resourceId").isEqualTo("123");
         }
-        
+
         @Test
         @DisplayName("should handle Ingredient resource type")
         void shouldHandleIngredientResourceType() {
             // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/resource-not-found?resourceType=Ingredient&id=999")
+            getRestHelper()
+                    .unauthenticated()
+                    .get()
+                    .uri("/public/v1/test-exceptions/resource-not-found?resourceType=Ingredient&id=999")
                     .exchange()
                     .expectStatus().isNotFound()
                     .expectBody()
@@ -56,13 +52,15 @@ class GlobalExceptionHandlerTest {
                     .jsonPath("$.resourceType").isEqualTo("Ingredient")
                     .jsonPath("$.resourceId").isEqualTo("999");
         }
-        
+
         @Test
         @DisplayName("should handle Meal resource type")
         void shouldHandleMealResourceType() {
             // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/resource-not-found?resourceType=Meal&id=42")
+            getRestHelper()
+                    .unauthenticated()
+                    .get()
+                    .uri("/public/v1/test-exceptions/resource-not-found?resourceType=Meal&id=42")
                     .exchange()
                     .expectStatus().isNotFound()
                     .expectBody()
@@ -71,25 +69,26 @@ class GlobalExceptionHandlerTest {
                     .jsonPath("$.resourceType").isEqualTo("Meal")
                     .jsonPath("$.resourceId").isEqualTo("42");
         }
-        
+
         @Test
         @DisplayName("should include instance URI in response")
         void shouldIncludeInstanceUri() {
             // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/resource-not-found?resourceType=User&id=abc123")
+            getRestHelper().unauthenticated()
+                    .get()
+                    .uri("/public/v1/test-exceptions/resource-not-found?resourceType=User&id=abc123")
                     .exchange()
                     .expectStatus().isNotFound()
                     .expectBody()
                     .jsonPath("$.instance").exists()
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions").matches(val));
+                    .jsonPath("$.instance").value(val -> containsString("/public/v1/test-exceptions").matches(val));
         }
     }
-    
+
     @Nested
     @DisplayName("Validation exception handling")
     class ValidationExceptionTests {
-        
+
         @Test
         @DisplayName("should return 400 for validation errors")
         void shouldReturn400ForValidationErrors() {
@@ -98,10 +97,11 @@ class GlobalExceptionHandlerTest {
                     .name("")
                     .value(-1)
                     .build();
-            
+
             // when/then
-            webTestClient.post()
-                    .uri("/test-exceptions/validation-error")
+            getRestHelper().unauthenticated()
+                    .post()
+                    .uri("/public/v1/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
                     .exchange()
@@ -110,9 +110,9 @@ class GlobalExceptionHandlerTest {
                     .jsonPath("$.status").isEqualTo(400)
                     .jsonPath("$.title").isEqualTo("Bad Request")
                     .jsonPath("$.detail").isEqualTo("Invalid request content.")
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/validation-error").matches(val));
+                    .jsonPath("$.instance").value(val -> containsString("/public/v1/test-exceptions/validation-error").matches(val));
         }
-        
+
         @Test
         @DisplayName("should return 400 when name is blank")
         void shouldReturn400WhenNameIsBlank() {
@@ -121,10 +121,12 @@ class GlobalExceptionHandlerTest {
                     .name("   ")
                     .value(10)
                     .build();
-            
+
             // when/then
-            webTestClient.post()
-                    .uri("/test-exceptions/validation-error")
+            getRestHelper()
+                    .unauthenticated()
+                    .post()
+                    .uri("/public/v1/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
                     .exchange()
@@ -132,7 +134,7 @@ class GlobalExceptionHandlerTest {
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(400);
         }
-        
+
         @Test
         @DisplayName("should return 400 when value is negative")
         void shouldReturn400WhenValueIsNegative() {
@@ -141,10 +143,11 @@ class GlobalExceptionHandlerTest {
                     .name("test")
                     .value(-5)
                     .build();
-            
+
             // when/then
-            webTestClient.post()
-                    .uri("/test-exceptions/validation-error")
+            getRestHelper().unauthenticated()
+                    .post()
+                    .uri("/public/v1/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
                     .exchange()
@@ -152,7 +155,7 @@ class GlobalExceptionHandlerTest {
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(400);
         }
-        
+
         @Test
         @DisplayName("should return 400 when value is null")
         void shouldReturn400WhenValueIsNull() {
@@ -161,16 +164,17 @@ class GlobalExceptionHandlerTest {
                     .name("test")
                     .value(null)
                     .build();
-            
+
             // when/then
-            webTestClient.post()
-                    .uri("/test-exceptions/validation-error")
+            getRestHelper().unauthenticated()
+                    .post()
+                    .uri("/public/v1/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
                     .exchange()
                     .expectStatus().isBadRequest();
         }
-        
+
         @Test
         @DisplayName("should succeed with valid request")
         void shouldSucceedWithValidRequest() {
@@ -179,10 +183,11 @@ class GlobalExceptionHandlerTest {
                     .name("test")
                     .value(10)
                     .build();
-            
+
             // when/then
-            webTestClient.post()
-                    .uri("/test-exceptions/validation-error")
+            getRestHelper().unauthenticated()
+                    .post()
+                    .uri("/public/v1/test-exceptions/validation-error")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(validRequest)
                     .exchange()
@@ -191,24 +196,25 @@ class GlobalExceptionHandlerTest {
                     .isEqualTo("Success");
         }
     }
-    
+
     @Nested
     @DisplayName("Data integrity violation exception handling")
     class DataIntegrityViolationExceptionTests {
-        
+
         @Test
         @DisplayName("should return 409 Conflict for DataIntegrityViolationException")
         void shouldReturn409ForDataIntegrityViolationException() {
             // when/then
-            webTestClient.get()
-                    .uri("/test-exceptions/data-integrity-violation-exception")
+            getRestHelper().unauthenticated()
+                    .get()
+                    .uri("/public/v1/test-exceptions/data-integrity-violation-exception")
                     .exchange()
                     .expectStatus().isEqualTo(409)
                     .expectBody()
                     .jsonPath("$.status").isEqualTo(409)
                     .jsonPath("$.title").isEqualTo("Conflict")
                     .jsonPath("$.detail").isEqualTo("A data integrity violation exception occurred")
-                    .jsonPath("$.instance").value(val -> containsString("/test-exceptions/data-integrity-violation-exception").matches(val));
+                    .jsonPath("$.instance").value(val -> containsString("/public/v1/test-exceptions/data-integrity-violation-exception").matches(val));
         }
     }
 }

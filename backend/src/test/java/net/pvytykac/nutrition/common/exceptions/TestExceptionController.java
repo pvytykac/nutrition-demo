@@ -1,6 +1,7 @@
 package net.pvytykac.nutrition.common.exceptions;
 
 import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * This controller is only loaded in test context.
  */
 @RestController
-@RequestMapping("/test-exceptions")
+@RequestMapping("/public/v1/test-exceptions")
 @PermitAll
 public class TestExceptionController {
 

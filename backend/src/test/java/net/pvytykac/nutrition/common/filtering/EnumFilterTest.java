@@ -1,6 +1,6 @@
 package net.pvytykac.nutrition.common.filtering;
 
-import net.pvytykac.nutrition.ingredient.Unit;
+import net.pvytykac.nutrition.common.filtering.TestEntity.TestStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class EnumFilterTest {
         @DisplayName("should have IN as default operator")
         void shouldHaveInAsDefaultOperator() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
 
             // then
             assertThat(filter.getOperator()).isEqualTo(EnumFilter.Operator.IN);
@@ -30,7 +30,7 @@ class EnumFilterTest {
         @DisplayName("should have null value by default")
         void shouldHaveNullValueByDefault() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
 
             // then
             assertThat(filter.getValue()).isNull();
@@ -45,7 +45,7 @@ class EnumFilterTest {
         @DisplayName("should return false when value is null")
         void shouldReturnFalseWhenValueIsNull() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
             filter.setValue(null);
 
             // then
@@ -56,7 +56,7 @@ class EnumFilterTest {
         @DisplayName("should return false when value is empty")
         void shouldReturnFalseWhenValueIsEmpty() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
             filter.setValue(List.of());
 
             // then
@@ -67,8 +67,8 @@ class EnumFilterTest {
         @DisplayName("should return true when value has elements")
         void shouldReturnTrueWhenValueHasElements() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.ACTIVE));
 
             // then
             assertThat(filter.isActive()).isTrue();
@@ -78,8 +78,8 @@ class EnumFilterTest {
         @DisplayName("should return true with multiple values")
         void shouldReturnTrueWithMultipleValues() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.ACTIVE, TestStatus.DELETED));
 
             // then
             assertThat(filter.isActive()).isTrue();
@@ -94,7 +94,7 @@ class EnumFilterTest {
         @DisplayName("should support IN operator")
         void shouldSupportIn() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
             filter.setOperator(EnumFilter.Operator.IN);
 
             // then
@@ -105,7 +105,7 @@ class EnumFilterTest {
         @DisplayName("should support NOT_IN operator")
         void shouldSupportNotIn() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
             filter.setOperator(EnumFilter.Operator.NOT_IN);
 
             // then
@@ -121,17 +121,14 @@ class EnumFilterTest {
         @DisplayName("should work with different enum types")
         void shouldWorkWithDifferentEnumTypes() {
             // given
-            EnumFilter<TestEnum> filter = new EnumFilter<>();
-            filter.setValue(List.of(TestEnum.VALUE_A, TestEnum.VALUE_B));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.ACTIVE, TestStatus.DELETED));
 
             // then
             assertThat(filter.isActive()).isTrue();
-            assertThat(filter.getValue()).containsExactly(TestEnum.VALUE_A, TestEnum.VALUE_B);
+            assertThat(filter.getValue()).containsExactly(TestStatus.ACTIVE, TestStatus.DELETED);
         }
     }
 
-    private enum TestEnum {
-        VALUE_A,
-        VALUE_B
-    }
+
 }

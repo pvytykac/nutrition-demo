@@ -1,8 +1,7 @@
 package net.pvytykac.nutrition.common.filtering;
 
 import jakarta.persistence.criteria.Root;
-import net.pvytykac.nutrition.ingredient.Ingredient;
-import net.pvytykac.nutrition.ingredient.Unit;
+import net.pvytykac.nutrition.common.filtering.TestEntity.TestStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,9 +27,9 @@ class SpecificationBuilderTest {
             filter.setValue(null);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -46,9 +45,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.EXACT_MATCH);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -64,9 +63,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.STARTS_WITH);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -82,9 +81,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.ENDS_WITH);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -100,9 +99,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.CONTAINS);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -118,9 +117,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.IN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -136,9 +135,9 @@ class SpecificationBuilderTest {
             filter.setOperator(StringFilter.Operator.CONTAINS);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.stringFilter(
+            Specification<TestEntity> result = SpecificationBuilder.stringFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("name")
+                    (Root<TestEntity> root) -> root.get("name")
             );
 
             // then
@@ -158,9 +157,9 @@ class SpecificationBuilderTest {
             filter.setValue(null);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -176,9 +175,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.EQUAL);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -194,9 +193,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.GREATER_THAN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -212,9 +211,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.GREATER_THAN_OR_EQUAL);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -230,9 +229,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.LOWER_THAN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -248,9 +247,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.LOWER_THAN_OR_EQUAL);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -266,9 +265,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.BETWEEN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -284,9 +283,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.BETWEEN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -302,13 +301,13 @@ class SpecificationBuilderTest {
         @DisplayName("should return null when filter is not active")
         void shouldReturnNullWhenFilterNotActive() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
             filter.setValue(null);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.enumFilter(
+            Specification<TestEntity> result = SpecificationBuilder.enumFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("unit")
+                    (Root<TestEntity> root) -> root.get("unit")
             );
 
             // then
@@ -319,14 +318,14 @@ class SpecificationBuilderTest {
         @DisplayName("should create specification for IN operator")
         void shouldCreateSpecForIn() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.ACTIVE, TestStatus.DELETED));
             filter.setOperator(EnumFilter.Operator.IN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.enumFilter(
+            Specification<TestEntity> result = SpecificationBuilder.enumFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("unit")
+                    (Root<TestEntity> root) -> root.get("unit")
             );
 
             // then
@@ -337,14 +336,14 @@ class SpecificationBuilderTest {
         @DisplayName("should create specification for NOT_IN operator")
         void shouldCreateSpecForNotIn() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.MILLILITER));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.DELETED));
             filter.setOperator(EnumFilter.Operator.NOT_IN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.enumFilter(
+            Specification<TestEntity> result = SpecificationBuilder.enumFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("unit")
+                    (Root<TestEntity> root) -> root.get("status")
             );
 
             // then
@@ -355,14 +354,14 @@ class SpecificationBuilderTest {
         @DisplayName("should handle single value in enum filter")
         void shouldHandleSingleValue() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.DELETED));
             filter.setOperator(EnumFilter.Operator.IN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.enumFilter(
+            Specification<TestEntity> result = SpecificationBuilder.enumFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("unit")
+                    (Root<TestEntity> root) -> root.get("status")
             );
 
             // then
@@ -373,14 +372,14 @@ class SpecificationBuilderTest {
         @DisplayName("should handle multiple values in enum filter")
         void shouldHandleMultipleValues() {
             // given
-            EnumFilter<Unit> filter = new EnumFilter<>();
-            filter.setValue(List.of(Unit.GRAM, Unit.MILLILITER));
+            EnumFilter<TestStatus> filter = new EnumFilter<>();
+            filter.setValue(List.of(TestStatus.ACTIVE, TestStatus.DELETED));
             filter.setOperator(EnumFilter.Operator.IN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.enumFilter(
+            Specification<TestEntity> result = SpecificationBuilder.enumFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("unit")
+                    (Root<TestEntity> root) -> root.get("unit")
             );
 
             // then
@@ -401,9 +400,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.GREATER_THAN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -419,9 +418,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.GREATER_THAN_OR_EQUAL);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -437,9 +436,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.LOWER_THAN);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
@@ -455,9 +454,9 @@ class SpecificationBuilderTest {
             filter.setOperator(NumericFilter.Operator.LOWER_THAN_OR_EQUAL);
 
             // when
-            Specification<Ingredient> result = SpecificationBuilder.numericFilter(
+            Specification<TestEntity> result = SpecificationBuilder.numericFilter(
                     filter,
-                    (Root<Ingredient> root) -> root.get("quantity")
+                    (Root<TestEntity> root) -> root.get("quantity")
             );
 
             // then
