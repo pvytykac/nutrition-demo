@@ -3,6 +3,8 @@ package net.pvytykac.nutrition.common.filtering;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Collection;
 
 /**
@@ -23,7 +25,7 @@ public class StringFilter {
         IN
     }
 
-    private Collection<String> value;
+    private @Nullable Collection<String> value;
     private Operator operator = Operator.STARTS_WITH;
 
     /**

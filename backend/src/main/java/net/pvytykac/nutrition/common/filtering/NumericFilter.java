@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import org.jspecify.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,7 +28,7 @@ public class NumericFilter {
         BETWEEN
     }
 
-    private Collection<BigDecimal> value;
+    private @Nullable Collection<BigDecimal> value;
     private Operator operator = Operator.GREATER_THAN;
 
     /**
@@ -44,7 +46,7 @@ public class NumericFilter {
      *
      * @return minimum value
      */
-    public BigDecimal getMinValue() {
+    public @Nullable BigDecimal getMinValue() {
         if (!isActive()) {
             return null;
         }
@@ -57,7 +59,7 @@ public class NumericFilter {
      *
      * @return maximum value
      */
-    public BigDecimal getMaxValue() {
+    public @Nullable BigDecimal getMaxValue() {
         if (!isActive()) {
             return null;
         }
@@ -70,10 +72,11 @@ public class NumericFilter {
      *
      * @return first value in the collection
      */
-    public BigDecimal getSingleValue() {
-        if (!isActive()) {
+    public @Nullable BigDecimal getSingleValue() {
+        var localValue = value;
+        if (localValue == null || localValue.isEmpty()) {
             return null;
         }
-        return value.iterator().next();
+        return localValue.iterator().next();
     }
 }

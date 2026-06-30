@@ -3,6 +3,8 @@ package net.pvytykac.nutrition.common.filtering;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Collection;
 
 /**
@@ -22,7 +24,7 @@ public class EnumFilter<T extends Enum<T>> {
         NOT_IN
     }
 
-    private Collection<T> value;
+    private @Nullable Collection<T> value;
     private Operator operator = Operator.IN;
 
     /**
