@@ -6,6 +6,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
+import org.jspecify.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public final class SpecificationBuilder {
      * @param <T> the entity type
      * @return Specification or null if filter is not active
      */
-    public static <T> Specification<T> stringFilter(
+    public static <T> @Nullable Specification<T> stringFilter(
             StringFilter filter,
             FieldExpression<T, String> fieldExpression) {
 
@@ -50,7 +52,7 @@ public final class SpecificationBuilder {
      * @param <T> the entity type
      * @return Specification or null if filter is not active
      */
-    public static <T> Specification<T> numericFilter(
+    public static <T> @Nullable Specification<T> numericFilter(
             NumericFilter filter,
             FieldExpression<T, BigDecimal> fieldExpression) {
 
@@ -91,7 +93,7 @@ public final class SpecificationBuilder {
      * @param <E> the enum type
      * @return Specification or null if filter is not active
      */
-    public static <T, E extends Enum<E>, F extends EnumFilter<E>> Specification<T> enumFilter(
+    public static <T, E extends Enum<E>, F extends EnumFilter<E>> @Nullable Specification<T> enumFilter(
             F filter,
             FieldExpression<T, E> fieldExpression) {
 
@@ -116,7 +118,7 @@ public final class SpecificationBuilder {
      * @return combined Specification or null if specs is empty
      */
     @SafeVarargs
-    public static <T> Specification<T> combine(Specification<T>... specs) {
+    public static <T> @Nullable Specification<T> combine(Specification<T>... specs) {
         Specification<T> combined = null;
         for (Specification<T> spec : specs) {
             if (spec != null) {
@@ -146,8 +148,8 @@ public final class SpecificationBuilder {
     }
 
     private static Predicate applyNumericOperator(
-            CriteriaBuilder cb, Path<BigDecimal> field, BigDecimal minValue,
-            BigDecimal maxValue, NumericFilter.Operator operator) {
+            CriteriaBuilder cb, Path<BigDecimal> field, @Nullable BigDecimal minValue,
+            @Nullable BigDecimal maxValue, NumericFilter.Operator operator) {
         return switch (operator) {
             case EQUAL -> cb.equal(field, minValue);
             case GREATER_THAN -> cb.greaterThan(field, minValue);

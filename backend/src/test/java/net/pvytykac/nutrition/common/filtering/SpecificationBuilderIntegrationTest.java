@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("NullAway")
 @DisplayName("SpecificationBuilder Integration")
 class SpecificationBuilderIntegrationTest extends RepositoryTestBase {
 
