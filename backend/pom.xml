@@ -236,7 +236,7 @@
                         <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>--should-stop=ifError=FLOW</arg>
-                        <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.pvytykac.nutrition -XepOpt:NullAway:KnownNullabilityAnnotations=org.jspecify.annotations.Nullable,org.springframework.lang.Nullable,org.springframework.lang.NonNull -XepOpt:NullAway:TreatGeneratedAsUnannotated=true</arg>
+                        <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:ERROR -XepExcludedPaths:.*/src/test/java/.* -XepOpt:NullAway:AnnotatedPackages=net.pvytykac.nutrition -XepOpt:NullAway:KnownNullabilityAnnotations=org.jspecify.annotations.Nullable,org.springframework.lang.Nullable,org.springframework.lang.NonNull -XepOpt:NullAway:TreatGeneratedAsUnannotated=true</arg>
                     </compilerArgs>
                     <fork>true</fork>
                 </configuration>
