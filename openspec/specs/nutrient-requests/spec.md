@@ -1,8 +1,12 @@
-## ADDED Requirements
+## Purpose
 
-### Requirement: User can suggest a new nutrient
+Users can suggest new nutrients for community review. Other users can vote on suggestions, and admins can approve them. Suggestions that reach 10 votes auto-approve. This provides a community-driven way to grow the nutrient catalog.
 
-Any authenticated user with the user role can submit a nutrient suggestion. The suggestion must include a name, optional kcal per gram, and a default unit. Created suggestions have status SUGGESTED and source SUGGESTION.
+## Requirements
+
+### Requirement: User SHALL be able to suggest a new nutrient
+
+Any authenticated user with the user role SHALL be able to submit a nutrient suggestion. The suggestion must include a name, optional kcal per gram, and a default unit. Created suggestions have status SUGGESTED and source SUGGESTION.
 
 #### Scenario: User submits a nutrient suggestion
 - **GIVEN** an authenticated user
@@ -21,9 +25,9 @@ Any authenticated user with the user role can submit a nutrient suggestion. The 
 - **WHEN** a user POSTs a suggestion with name "Carbohydrates"
 - **THEN** the response is `409 Conflict`
 
-### Requirement: Any authenticated user can list open suggestions
+### Requirement: Any authenticated user SHALL be able to list open suggestions
 
-Suggestions with status SUGGESTED are returned as a paginated list with vote counts.
+Suggestions with status SUGGESTED SHALL be returned as a paginated list with vote counts.
 
 #### Scenario: User lists open suggestions
 - **GIVEN** 3 SUGGESTED and 2 ACTIVE nutrients exist
@@ -32,9 +36,9 @@ Suggestions with status SUGGESTED are returned as a paginated list with vote cou
 - **AND** each suggestion includes a `voteCount` field
 - **AND** the response includes HATEOAS `_links`
 
-### Requirement: User can vote on a suggestion
+### Requirement: User SHALL be able to vote on a suggestion
 
-Any authenticated user with the user role can vote once per suggestion. Votes are idempotent.
+Any authenticated user with the user role SHALL be able to vote once per suggestion. Votes are idempotent.
 
 #### Scenario: User votes on a suggestion
 - **GIVEN** a suggestion with id `abc-123` and an authenticated user
@@ -53,9 +57,9 @@ Any authenticated user with the user role can vote once per suggestion. Votes ar
 - **WHEN** a user POSTs to `/v1/nutrient-suggestions/abc-123/votes`
 - **THEN** the response is `400 Bad Request`
 
-### Requirement: Suggestion is auto-approved at vote threshold
+### Requirement: Suggestion SHALL be auto-approved at vote threshold
 
-When a suggestion reaches 10 votes, it is automatically approved and its status changes to ACTIVE.
+When a suggestion reaches 10 votes, it SHALL be automatically approved and its status SHALL change to ACTIVE.
 
 #### Scenario: 10th vote triggers auto-approval
 - **GIVEN** a suggestion with 9 votes
@@ -72,7 +76,9 @@ When a suggestion reaches 10 votes, it is automatically approved and its status 
 - **AND** the suggestion status changes to `ACTIVE`
 - **AND** the nutrient is available via the nutrients API
 
-### Requirement: Any authenticated user can get a suggestion by id
+### Requirement: Any authenticated user SHALL be able to get a suggestion by id
+
+Any authenticated user SHALL be able to fetch a single suggestion by its UUID. The response SHALL include fine-grained HATEOAS links including `vote` for users and `approve` for admins.
 
 #### Scenario: User fetches existing suggestion
 - **GIVEN** a SUGGESTED suggestion with id `abc-123`

@@ -1,8 +1,12 @@
-## ADDED Requirements
+## Purpose
 
-### Requirement: Admin can create a new active nutrient
+Admins can manage the master list of active nutrients (name, kcal per gram, default unit). All authenticated users can view and search the list. The CRUD API is restricted to admin-only mutations.
 
-Only authenticated users with the admin role can create nutrients. A nutrient has a name, kcal per gram (optional), and a default unit (GRAM or MILLIGRAM). Created nutrients have status ACTIVE and source ADMIN.
+## Requirements
+
+### Requirement: Admin SHALL be able to create a new active nutrient
+
+Only authenticated users with the admin role SHALL be able to create nutrients. A nutrient has a name, kcal per gram (optional), and a default unit (GRAM or MILLIGRAM). Created nutrients have status ACTIVE and source ADMIN.
 
 #### Scenario: Admin creates a nutrient successfully
 - **GIVEN** an authenticated admin user
@@ -21,9 +25,9 @@ Only authenticated users with the admin role can create nutrients. A nutrient ha
 - **WHEN** an admin POSTs a nutrient with name "Carbohydrates"
 - **THEN** the response is `409 Conflict`
 
-### Requirement: Any authenticated user can list active nutrients
+### Requirement: Any authenticated user SHALL be able to list active nutrients
 
-Nutrients with status ACTIVE are returned as a paginated, filterable, sortable list.
+Nutrients with status ACTIVE SHALL be returned as a paginated, filterable, sortable list.
 
 #### Scenario: User fetches first page
 - **GIVEN** 25 active nutrients exist
@@ -42,7 +46,9 @@ Nutrients with status ACTIVE are returned as a paginated, filterable, sortable l
 - **WHEN** a user GETs `/v1/nutrients?sort=name,desc`
 - **THEN** nutrients are returned in descending alphabetical order
 
-### Requirement: Any authenticated user can get an active nutrient by id
+### Requirement: Any authenticated user SHALL be able to get an active nutrient by id
+
+Any authenticated user SHALL be able to fetch a single active nutrient by its UUID. The response SHALL include fine-grained HATEOAS links for available actions.
 
 #### Scenario: User fetches existing active nutrient
 - **GIVEN** an active nutrient with id `abc-123` exists
@@ -60,7 +66,9 @@ Nutrients with status ACTIVE are returned as a paginated, filterable, sortable l
 - **WHEN** a user GETs `/v1/nutrients/abc-123`
 - **THEN** the response is `404 Not Found`
 
-### Requirement: Admin can update an active nutrient
+### Requirement: Admin SHALL be able to update an active nutrient
+
+An authenticated admin user SHALL be able to update the name, kcal per gram, and default unit of an existing active nutrient.
 
 #### Scenario: Admin updates name and kcal
 - **GIVEN** an active nutrient with id `abc-123`
@@ -73,7 +81,9 @@ Nutrients with status ACTIVE are returned as a paginated, filterable, sortable l
 - **WHEN** an admin PUTs a payload to `/v1/nutrients/abc-123`
 - **THEN** the response is `404 Not Found`
 
-### Requirement: Admin can delete a nutrient
+### Requirement: Admin SHALL be able to delete a nutrient
+
+An authenticated admin user SHALL be able to delete a nutrient in any status. Deleting a nutrient SHALL cascade to its associated votes.
 
 #### Scenario: Admin deletes an existing nutrient (any status)
 - **GIVEN** a nutrient with id `abc-123` (any status) and associated votes

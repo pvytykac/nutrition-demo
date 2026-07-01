@@ -1,6 +1,7 @@
 package net.pvytykac.nutrition.common.exceptions.internal;
 
 import jakarta.servlet.http.HttpServletRequest;
+import net.pvytykac.nutrition.common.exceptions.ApplicationException;
 import net.pvytykac.nutrition.common.exceptions.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,42 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.CONFLICT,
             "A data integrity violation exception occurred"
+        );
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
+    }
+
+    /**
+     * Handles ApplicationException - maps to 409 CONFLICT.
+     * Used for duplicate name conflicts and other application-level constraint violations.
+     */
+    @ExceptionHandler(ApplicationException.class)
+    public ProblemDetail handleApplicationException(
+            ApplicationException ex,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT,
+            ex.getMessage()
+        );
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
+    }
+
+    /**
+     * Handles IllegalStateException - maps to 400 BAD REQUEST.
+     * Used for operation on resources in incorrect state (e.g., voting on approved suggestion).
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalStateException(
+            IllegalStateException ex,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage()
         );
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 

@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
         "spring.datasource.url=jdbc:tc:postgresql:18:///test",
         "spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver",
         "spring.jpa.hibernate.ddl-auto=update",
+        "spring.flyway.enabled=false",
 })
 public abstract class RepositoryTestBase {
 

@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthProvider'
 import { AuthGuard } from './auth/AuthGuard'
 import { AppLayout } from './layout/AppLayout'
 import { ResourceListPage } from './resources/ResourceListPage'
+import { NutrientsPage } from './pages/NutrientsPage'
 
 function CallbackPage() {
   return (
@@ -28,7 +29,7 @@ export default function App() {
           >
             <Route index element={<ResourceListPage resourcePath="/v1/ingredients" title="Ingredients" />} />
             <Route path="ingredients" element={<ResourceListPage resourcePath="/v1/ingredients" title="Ingredients" />} />
-            <Route path="nutrients" element={<ResourceListPage resourcePath="/v1/nutrients" title="Nutrients" />} />
+            <Route path="nutrients" element={<NutrientsPage />} />
             <Route path="recipes" element={<ResourceListPage resourcePath="/v1/recipes" title="Recipes" />} />
           </Route>
         </Routes>

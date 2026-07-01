@@ -32,6 +32,6 @@ None — the nutrient module has no existing behaviour specs.
 
 - **Database**: New `nutrients` table (with status/source/author_id) and `nutrient_votes` table via Flyway migration
 - **Backend**: The `nutrient` module evolves from a stub to a complete Modulith module with entity, repository, service, controller, DTOs
-- **Frontend**: Not in scope for this change (separate change follows)
+- **Frontend**: Rich nutrient management UI with admin CRUD forms, community suggestion listing with voting and approval actions
 - **API**: New REST endpoints under `/v1/nutrients` (ACTIVE, admin CRUD) and `/v1/nutrient-suggestions` (SUGGESTED, user + admin)
 - **Security**: `@HasAdminRole` on mutation endpoints, `@HasUserRole` on suggestion/vote, `@HasUserOrAdminRole` on read endpoints

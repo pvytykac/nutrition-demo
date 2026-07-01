@@ -18,7 +18,6 @@ The project uses Spring Modulith with a `common` shared module, OAuth2/Keycloak 
 - HATEOAS links in HAL format: coarse links on collection responses, fine-grained per-resource links on individual items
 
 **Non-Goals:**
-- No frontend UI in this change (separate change follows)
 - No NamedInterface (NutrientLookup) — will be added when cross-module consumers exist
 - No email notifications for suggestion approval
 - No vote expiry or withdrawal
@@ -208,7 +207,35 @@ The `edit` and `delete` links are only present for admin users.
 
 The `vote` link is present when the user has the USER role and hasn't already voted. The `approve` link is present only for admin users.
 
-## Risks / Trade-offs
+## Frontend Architecture
+
+### Component Structure
+
+```
+NutrientsPage            — tabbed page with Active / Suggestions tabs
+  ├─ NutrientForm        — modal form for admin create/edit (name, kcalPerGram, defaultUnit)
+  └─ SuggestForm         — modal form for user to suggest a nutrient
+```
+
+- Active tab: table of ACTIVE nutrients (columns: name, kcal/g, unit). Admin Edit/Delete via per-item HAL link discovery. "Create" button shown when collection `_links` contains `create-nutrient` (admin only).
+- Suggestions tab: table of SUGGESTED nutrients (columns: name, kcal/g, unit, votes, author). User Vote and admin Approve via per-item HAL link discovery. "Suggest" button shown when collection `_links` contains `suggest-nutrient` (user only).
+- Both tabs load independently with their own fetch lifecycle and pagination. Tab selection is client-side state (no URL param).
+
+### Data Flow
+
+1. All data fetching goes through `src/api/nutrients.ts`, which calls the backend REST endpoints.
+2. Backend returns `PagedModel` in HAL format (`_embedded.nutrients` / `_embedded.suggestions`). The frontend reads directly from `_embedded`.
+3. Action availability is determined by HAL link presence — if a link with relation `edit`, `delete`, `vote`, `approve`, `create-nutrient`, or `suggest-nutrient` is present in `_links`, the corresponding button is rendered.
+4. No role checks are hardcoded in the frontend; role-based UI is driven entirely by HATEOAS link discovery.
+5. Pagination controls are inline for each tab (no shared hook — each tab manages its own fetch lifecycle for simplicity).
+
+### Routing
+
+| Path | Component | Notes |
+|---|---|---|
+| `/nutrients` | `NutrientsPage` | Tabbed: Active (default) / Suggestions |
+
+### Risks / Trade-offs
 
 - **[Risk]** Vote threshold race: two votes arriving simultaneously could push count past 10 and trigger approval twice. → Mitigation: use `@Lock(PESSIMISTIC_WRITE)` on the nutrient row when checking threshold.
 - **[Risk]** Nutrient created via suggestion auto-approval has no admin review for correctness. → Mitigation: admin can always edit or delete the created nutrient directly.
