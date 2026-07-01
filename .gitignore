@@ -1,5 +1,7 @@
-backend/target
-backend/.idea
+.idea
+
 *.classpath
 *.factorypath
 *.settings
+
+backend/target
