@@ -48,4 +48,4 @@ springdoc:
       client-id: ui
       use-pkce-with-authorization-code-grant: true
 cors:
-  allowed-origins: http://localhost:9000,http://localhost:8080
+  allowed-origins: http://localhost:9000,http://localhost:8080,http://localhost:5173

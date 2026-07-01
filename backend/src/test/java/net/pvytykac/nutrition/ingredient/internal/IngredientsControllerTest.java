@@ -19,8 +19,10 @@ public class IngredientsControllerTest extends ControllerTestBase {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo("1")
-                .jsonPath("$.name").isEqualTo("potato");
+                .jsonPath("$.content[0].id").isEqualTo("1")
+                .jsonPath("$.content[0].name").isEqualTo("potato")
+                .jsonPath("$.page.number").isEqualTo(0)
+                .jsonPath("$.page.totalElements").isEqualTo(1);
     }
 
     @Test
@@ -34,8 +36,10 @@ public class IngredientsControllerTest extends ControllerTestBase {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo("1")
-                .jsonPath("$.name").isEqualTo("potato");
+                .jsonPath("$.content[0].id").isEqualTo("1")
+                .jsonPath("$.content[0].name").isEqualTo("potato")
+                .jsonPath("$.page.number").isEqualTo(0)
+                .jsonPath("$.page.totalElements").isEqualTo(1);
     }
 
     @Test

@@ -1,9 +1,13 @@
 package net.pvytykac.nutrition.recipe.internal;
 
 import net.pvytykac.nutrition.common.security.HasUserOrAdminRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/recipes")
@@ -11,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 class RecipesController {
 
     @GetMapping
-    public Recipe getNutrient() {
-        return new Recipe("1", "mashed potatoes");
+    Page<Recipe> getRecipes() {
+        return new PageImpl<>(List.of(new Recipe("1", "mashed potatoes")));
     }
 
     public record Recipe(String id, String name) {

@@ -9,7 +9,7 @@ Multimodule project with a Spring Boot 4 backend. The backend is a REST API for 
 ## Modules
 
 - **backend** - Java 25 + Spring Boot 4 REST API - see @backend/README.md
-- **frontend** - TypeScript + React SPA (planned) - see @frontend/README.md
+- **frontend** - TypeScript + React SPA - see @frontend/README.md
 - **e2e-tests** - TypeScript + Playwright tests (planned) - see @e2e-tests/README.md
 
 ## Backend Build Commands
@@ -42,11 +42,32 @@ All commands run from `/home/paly/projects/nutrition-demo/backend` directory:
 ./mvnw jacoco:report
 ```
 
+## Frontend Commands
+
+All commands run from `/home/paly/projects/nutrition-demo/frontend` directory:
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server (with proxy to backend and Keycloak)
+npm run dev
+
+# Build for production
+npm run build
+
+# Lint with oxlint
+npm run lint
+```
+
 ## Infrastructure
 
 ```bash
-# Start PostgreSQL and Keycloak (from backend/)
+# Start PostgreSQL, Keycloak, and Kafka (from project root)
 docker compose up -d
+
+# Start only from backend/
+# docker compose up -d
 
 # View logs
 docker compose logs -f
