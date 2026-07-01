@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.pvytykac.nutrition.common.security.HasAdminRole;
 import net.pvytykac.nutrition.common.security.HasUserOrAdminRole;
+import net.pvytykac.nutrition.common.security.HasUserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
@@ -11,14 +12,11 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,69 +24,74 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1/nutrients")
+@RequestMapping("/v1/nutrient-suggestions")
 @RequiredArgsConstructor
-class NutrientsController {
+class NutrientSuggestionsController {
 
     private final NutrientService nutrientService;
     private final NutrientLinkBuilder linkBuilder;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @HasAdminRole
-    public NutrientResponseDTO createNutrient(
-            @Valid @RequestBody NutrientRequestDTO request,
+    @HasUserRole
+    public SuggestionResponseDTO suggestNutrient(
+            @Valid @RequestBody SuggestionRequestDTO request,
             Authentication auth) {
 
-        var response = nutrientService.createNutrient(request, auth.getName());
-        response.add(linkBuilder.buildNutrientResourceLinks(response.getId(), auth));
+        var response = nutrientService.suggestNutrient(request, auth.getName());
+        response.add(linkBuilder.buildSuggestionResourceLinks(response.getId(), auth, false));
         return response;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @HasUserOrAdminRole
-    public PagedModel<NutrientResponseDTO> getNutrients(
-            @RequestParam(required = false) String name,
+    public PagedModel<SuggestionResponseDTO> getSuggestions(
             Pageable pageable,
             Authentication auth) {
 
-        var page = nutrientService.findAllNutrients(name, pageable);
-        page.forEach(item -> item.add(linkBuilder.buildNutrientResourceLinks(item.getId(), auth)));
-        var links = linkBuilder.buildNutrientCollectionLinks(auth);
+        var page = nutrientService.findAllSuggestions(pageable);
+        page.forEach(item -> {
+            var alreadyVoted = auth != null && auth.isAuthenticated()
+                    && nutrientService.hasVoted(item.getId(), auth.getName());
+            item.add(linkBuilder.buildSuggestionResourceLinks(item.getId(), auth, alreadyVoted));
+        });
+        var links = linkBuilder.buildSuggestionCollectionLinks(auth);
         return toPagedModel(page, links);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @HasUserOrAdminRole
-    public NutrientResponseDTO getNutrient(
+    public SuggestionResponseDTO getSuggestion(
             @PathVariable UUID id,
             Authentication auth) {
 
-        var response = nutrientService.findNutrientById(id);
-        response.add(linkBuilder.buildNutrientResourceLinks(id, auth));
+        var response = nutrientService.findSuggestionById(id);
+        var alreadyVoted = auth != null && auth.isAuthenticated()
+                && nutrientService.hasVoted(id, auth.getName());
+        response.add(linkBuilder.buildSuggestionResourceLinks(id, auth, alreadyVoted));
         return response;
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @HasAdminRole
-    public NutrientResponseDTO updateNutrient(
+    @PostMapping(value = "/{id}/votes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @HasUserRole
+    public SuggestionResponseDTO voteOnSuggestion(
             @PathVariable UUID id,
-            @Valid @RequestBody NutrientRequestDTO request,
             Authentication auth) {
 
-        var response = nutrientService.updateNutrient(id, request);
-        response.add(linkBuilder.buildNutrientResourceLinks(id, auth));
+        var response = nutrientService.voteOnSuggestion(id, auth.getName());
+        response.add(linkBuilder.buildSuggestionResourceLinks(id, auth, true));
         return response;
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping(value = "/{id}/approve", produces = MediaType.APPLICATION_JSON_VALUE)
     @HasAdminRole
-    public void deleteNutrient(
+    public SuggestionResponseDTO approveSuggestion(
             @PathVariable UUID id,
             Authentication auth) {
 
-        nutrientService.deleteNutrient(id);
+        var response = nutrientService.approveSuggestion(id);
+        response.add(linkBuilder.buildSuggestionResourceLinks(id, auth, false));
+        return response;
     }
 
     private static <T> PagedModel<T> toPagedModel(Page<T> page, List<Link> links) {
