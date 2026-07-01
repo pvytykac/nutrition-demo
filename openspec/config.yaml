@@ -1,6 +1,6 @@
 schema: intent-driven
 rules:
-  propose:
+  proposal:
     - Must always use grill-me skill
   design:
     - Must always use c4-diagram skill
